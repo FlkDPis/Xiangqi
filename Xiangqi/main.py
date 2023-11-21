@@ -132,6 +132,12 @@ game = Game(board, ["Arthur", "Arthur"], pions, cases)
 game.run()
 i = 1
 
+# Test
+tr = cases.get(spawn["white"].get("roi")[0])
+g, h = tr.split("-")
+pos = (int(g), int(h))
+roi = Pion(pos, "roi", 1, mouvs.get(pion.get("roi")), "white")
+
 # Boucle principale du jeu
 while game.running:
     for event in pg.event.get():
