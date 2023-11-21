@@ -33,13 +33,35 @@ class Pion:
         if self.out:
             self.out()
         self.movements = moves
+        self.suivre_souris = False
+                self.cases_available = []
+                for j in range(len(self.movements)):
+                    a, b = self.movements[j][0], self.movements[j][1]
+                    n_x, n_y = self.x + (a * 73), self.y + (b * 73)
+                    for k, v in cases.items():
+                        if str(n_x) + "-" + str(n_y) == v and k in palais_w:
+                            self.cases_available.append(k)
 
     def draw(self, screen):
+        chemin = "C:\\Users\\mhnar\\OneDrive\\Bureau\\School\\NSI\\Projet\\Xiangqi\\TheManPu.OTF"
         c = 1 if self.color == 0 else 0
-        font = pg.font.SysFont("KAZYcase scrabble", 50)
-        pg.draw.circle(screen, (couleurs[self.color], (self.x, self.y, 60, 60)))
+        font = pg.font.Font(
+            chemin,
+            35,
+        )
         ecrit = font.render(self.name, True, (couleurs[c]))
-        screen.blit(ecrit, (self.x, self.y))
+
+        surface_size = max(ecrit.get_width(), ecrit.get_height()) + 25
+        cercle = pg.Surface((surface_size, surface_size), pg.SRCALPHA)
+
+        center = (surface_size // 2, surface_size // 2)
+
+        pg.draw.circle(cercle, couleurs[c], center, surface_size // 2 - 1)
+        pg.draw.circle(cercle, couleurs[self.color], center, surface_size // 2 - 3)
+
+        text_rect = ecrit.get_rect(center=center)
+        cercle.blit(ecrit, text_rect.topleft)
+        screen.blit(cercle, (self.x - surface_size // 2, self.y - surface_size // 2))
 
     def out(self, screen):
         game.pions.pop(game.pions[self.color][self.name])
