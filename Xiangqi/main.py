@@ -137,12 +137,56 @@ while game.running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             game.running = False
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pg.mouse.get_pos()
+            roi_x, roi_y = roi.x, roi.y
+            distance_to_roi = distance(roi_x, roi_y, mouse_x, mouse_y)
+            if distance_to_roi <= 30:
+                roi.suivre_souris = True
+        elif event.type == pg.MOUSEBUTTONUP:
+            if roi.suivre_souris:
+                event_x, event_y = roi.x, roi.y
+                b = {}
+                for j in range(len(roi.cases_available)):
+                    pos_e = cases.get(roi.cases_available[j])
+                    xx, yy = pos_e.split("-")
+                    xx = int(xx)
+                    yy = int(yy)
+                    d = distance(event_x, event_y, xx, yy)
+                    b[d] = roi.cases_available[j]
+                    print(roi.cases_available)
+
+                sorted_b = dict(sorted(b.items()))
+                ak = 0
+                for k, v in sorted_b.items():
+                    if ak == 0:
+                        c = cases.get(v)
+                        x, y = c.split("-")
+                        x = int(x)
+                        y = int(y)
+                        roi.x = x
+                        roi.y = y
+                        ak = 1
+                roi.cases_available = []
+                for j in range(len(roi.movements)):
+                    g_x, h_y = roi.movements[j][0], roi.movements[j][1]
+                    n_x, n_y = roi.x + (g_x * 73), roi.y + (h_y * 73)
+                    for k, v in cases.items():
+                        if str(n_x) + "-" + str(n_y) == v and k in palais_w:
+                            roi.cases_available.append(k)
+                roi.suivre_souris = False
+            else:
+                roi.suivre_souris = False
 
     screen.fill((255, 206, 162))
     board.draw_board()
     if i == 1:
         print(cases)
         i += 1
+
+    if roi.suivre_souris:
+        roi.x, roi.y = pg.mouse.get_pos()
+        
     pg.display.flip()
 
 pg.quit()
