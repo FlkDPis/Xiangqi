@@ -1,3 +1,8 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 # Xiangqi
 
 ## Informations
@@ -11,6 +16,12 @@
 - pygame
 
 ## Utilisation
+
+# Prérequis
+Vous devez utiliser cette commande pour installer pygame
+```
+pip3 install pygame
+```
 
 - Pour utiliser
   ```
