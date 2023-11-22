@@ -34,13 +34,13 @@ class Pion:
             self.out()
         self.movements = moves
         self.suivre_souris = False
-                self.cases_available = []
-                for j in range(len(self.movements)):
-                    a, b = self.movements[j][0], self.movements[j][1]
-                    n_x, n_y = self.x + (a * 73), self.y + (b * 73)
-                    for k, v in cases.items():
-                        if str(n_x) + "-" + str(n_y) == v and k in palais_w:
-                            self.cases_available.append(k)
+        self.cases_available = []
+        for j in range(len(self.movements)):
+            a, b = self.movements[j][0], self.movements[j][1]
+            n_x, n_y = self.x + (a * 73), self.y + (b * 73)
+            for k, v in cases.items():
+                if str(n_x) + "-" + str(n_y) == v and k in palais_w:
+                    self.cases_available.append(k)
 
     def draw(self, screen):
         chemin = "C:\\Users\\mhnar\\OneDrive\\Bureau\\School\\NSI\\Projet\\Xiangqi\\TheManPu.OTF"
