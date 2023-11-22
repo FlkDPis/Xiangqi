@@ -1,10 +1,12 @@
 import pygame as pg
 from pygame.locals import *
 from variables import *
+from math import *
 
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 800))
-
+def distance(x1, y1, x2, y2):
+    return .sqrt((x2 - x1)**2 + (y2 - y1)**2
 
 # Class Case qui permet de savoir où sont les cases
 class Case:
@@ -158,7 +160,7 @@ i = 1
 tr = cases.get(spawn["white"].get("roi")[0])
 g, h = tr.split("-")
 pos = (int(g), int(h))
-roi = Pion(pos, "roi", 1, mouvs.get(pion.get("roi")), "white")
+roi = Pion(pos, "roi", 1, mouvs.get(pion.get("roi")))
 
 # Boucle principale du jeu
 while game.running:
@@ -208,6 +210,7 @@ while game.running:
 
     screen.fill((255, 206, 162))
     board.draw_board()
+    roi.draw()
     if i == 1:
         print(cases)
         i += 1
