@@ -31,13 +31,13 @@ spawn = {
 }
 
 # Mouvements autorisé pour chaque pion
-moves = {
-    "帥": {
+mouvs = {
+    "帥": [
         (1, 0),
         (0, 1),
         (-1, 0),
         (0, -1),
-    }
+    ],
 }
 
 # Les pions et leur nom en écriture chinoise
