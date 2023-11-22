@@ -2,6 +2,7 @@
 cases = {}
 pions = {"white": {}, "black": {}}
 couleurs = [(0, 0, 0), (255, 255, 255)]
+letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]    
 
 # Cases du palais noir et blanc
 palais_w = ["H4", "H5", "H6", "I4", "I5", "I6", "J4", "J5", "J6"]
