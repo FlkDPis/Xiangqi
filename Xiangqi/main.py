@@ -6,7 +6,7 @@ from math import *
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 800))
 def distance(x1, y1, x2, y2):
-    return .sqrt((x2 - x1)**2 + (y2 - y1)**2
+    return sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 # Class Case qui permet de savoir où sont les cases
 class Case:
