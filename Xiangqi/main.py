@@ -41,11 +41,11 @@ class Pion:
             a, b = self.movements[j][0], self.movements[j][1]
             n_x, n_y = self.x + (a * 73), self.y + (b * 73)
             for k, v in cases.items():
-                if str(n_x) + "-" + str(n_y) == v and k in palais_w:
+                if str(n_x) + "-" + str(n_y) == v and k in palais[self.color]:
                     self.cases_available.append(k)
 
     def draw(self, screen):
-        chemin = "C:\\Users\\mhnar\\OneDrive\\Bureau\\School\\NSI\\Projet\\Xiangqi\\TheManPu.OTF"
+        chemin = None
         c = 1 if self.color == 0 else 0
         font = pg.font.Font(
             chemin,
@@ -157,10 +157,19 @@ game.run()
 i = 1
 
 # Test
-tr = cases.get(spawn["white"].get("roi")[0])
-g, h = tr.split("-")
-pos = (int(g), int(h))
-roi = Pion(pos, "roi", 1, mouvs.get(pion.get("roi")))
+entities = []
+for col, entite in pions.items():
+    for g in range(len(entite)):
+        print(entite[g])
+        tr = cases.get(spawn[col].get(entite[g])[0])
+        del spawn[col][entite[g]][0]
+        w,x = tr.split("-")
+        pos = (int(w), int(x))
+        couleur = 0 if col == "white" else 1
+        mov = mouvs.get(pion.get(entite[g]))
+        pion_entite = Pion(pos, entite[g], couleur, mov)
+        entities.append(pion_entite)
+        print(1)
 
 # Boucle principale du jeu
 while game.running:
@@ -169,54 +178,62 @@ while game.running:
             game.running = False
         elif event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
-            roi_x, roi_y = roi.x, roi.y
-            distance_to_roi = distance(roi_x, roi_y, mouse_x, mouse_y)
-            if distance_to_roi <= 30:
-                roi.suivre_souris = True
+            for ent in entities:
+                roi_x, roi_y = ent.x, ent.y
+                distance_to_roi = distance(roi_x, roi_y, mouse_x, mouse_y)
+                if distance_to_roi <= 30:
+                    ent.suivre_souris = True
         elif event.type == pg.MOUSEBUTTONUP:
-            if roi.suivre_souris:
-                event_x, event_y = roi.x, roi.y
-                b = {}
-                for j in range(len(roi.cases_available)):
-                    pos_e = cases.get(roi.cases_available[j])
-                    xx, yy = pos_e.split("-")
-                    xx = int(xx)
-                    yy = int(yy)
-                    d = distance(event_x, event_y, xx, yy)
-                    b[d] = roi.cases_available[j]
-                    print(roi.cases_available)
+            for ent in entities:
+                if ent.suivre_souris:
+                    event_x, event_y = ent.x, ent.y
+                    b = {}
+                    for j in range(len(ent.cases_available)):
+                        pos_e = cases.get(ent.cases_available[j])
+                        xx, yy = pos_e.split("-")
+                        xx = int(xx)
+                        yy = int(yy)
+                        d = distance(event_x, event_y, xx, yy)
+                        b[d] = ent.cases_available[j]
+                        print(ent.cases_available)
 
-                sorted_b = dict(sorted(b.items()))
-                ak = 0
-                for k, v in sorted_b.items():
-                    if ak == 0:
-                        c = cases.get(v)
-                        x, y = c.split("-")
-                        x = int(x)
-                        y = int(y)
-                        roi.x = x
-                        roi.y = y
-                        ak = 1
-                roi.cases_available = []
-                for j in range(len(roi.movements)):
-                    g_x, h_y = roi.movements[j][0], roi.movements[j][1]
-                    n_x, n_y = roi.x + (g_x * 73), roi.y + (h_y * 73)
-                    for k, v in cases.items():
-                        if str(n_x) + "-" + str(n_y) == v and k in palais_w:
-                            roi.cases_available.append(k)
-                roi.suivre_souris = False
-            else:
-                roi.suivre_souris = False
+                    sorted_b = dict(sorted(b.items()))
+                    ak = 0
+                    for k, v in sorted_b.items():
+                        if ak == 0:
+                            c = cases.get(v)
+                            x, y = c.split("-")
+                            x = int(x)
+                            y = int(y)
+                            ent.x = x
+                            ent.y = y
+                            ent.case = cases.get(str(ent.x) + "-" + str(ent.y))
+                            ak = 1
+                    ent.cases_available = []
+                    for j in range(len(ent.movements)):
+                        g_x, h_y = ent.movements[j][0], ent.movements[j][1]
+                        n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
+                        for k, v in cases.items():
+                            if entite.fr == 'roi':
+                                if k in palais[entite.color]:
+                                   ent.cases_available.append(k)
+                            elif str(n_x) + "-" + str(n_y) == v:
+                                ent.cases_available.append(k)
+                    ent.suivre_souris = False
+                else:
+                    ent.suivre_souris = False
 
     screen.fill((255, 206, 162))
     board.draw_board()
-    roi.draw()
+    for ent in entities:
+        ent.draw(screen)
     if i == 1:
         print(cases)
+        print(pions)
         i += 1
-
-    if roi.suivre_souris:
-        roi.x, roi.y = pg.mouse.get_pos()
+    for ent in entities:
+        if ent.suivre_souris:
+            ent.x, ent.y = pg.mouse.get_pos()
         
     pg.display.flip()
 
