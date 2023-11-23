@@ -31,7 +31,7 @@ class Pion:
         self.x, self.y = pos
         self.out = False
         self.color = color
-        self.case = game.cases.get(str(self.x) + "-" + str(self.y))
+        self.case = cases.get(str(self.x) + "-" + str(self.y))
         if self.out:
             self.out()
         self.movements = moves
