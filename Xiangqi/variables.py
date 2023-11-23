@@ -32,12 +32,106 @@ spawn = {
 
 # Mouvements autorisé pour chaque pion
 mouvs = {
+# Aucune pièce ne peut sauter au dessus d'une autre
+# sauf excpetion 
+
+    #ROI
+# Ne peut pas sortir du palais
     "帥": [
         (1, 0),
         (0, 1),
         (-1, 0),
         (0, -1),
     ],
+    
+    #CONSEILLER
+# Ne peut pas sortir du palais
+    "仕": [
+        (1,1),
+        (-1,1),
+        (-1,-1),
+        (1,-1)
+    ],
+
+    #ELEPHANT
+# Ne peut pas traverser la rivière
+    "象": [
+        (2,2),
+        (-2,2),
+        (-2,-2),
+        (2,-2)
+    ],
+
+    #CHEVAL
+# Peut traverser la rivière
+    "馬": [
+        (1,2),
+        (-1,2),
+        (-2,1),
+        (-2,-1),
+        (2,1),
+        (2,-1),
+        (1,-2),
+        (-1,-2)
+    ],
+
+    #CHARIOT
+# Peut traverser la rivière
+    "車": [
+        (0,1),
+        (0,2),
+        (0,3),
+        (0,4),
+        (0,5),
+        (0,6),
+        (0,7),
+        (0,8),
+        (0,9),
+        (1,0),
+        (2,0),
+        (3,0),
+        (4,0),
+        (5,0),
+        (6,0),
+        (7,0),
+        (8,0)
+    ],
+
+    #CANON
+# Doit sauter sur une pièce pour capturer une autre
+# Peut traverser la rivière
+    "砲": [
+        (0,1),
+        (0,2),
+        (0,3),
+        (0,4),
+        (0,5),
+        (0,6),
+        (0,7),
+        (0,8),
+        (0,9),
+        (1,0),
+        (2,0),
+        (3,0),
+        (4,0),
+        (5,0),
+        (6,0),
+        (7,0),
+        (8,0)
+    ],
+
+    #SOLDAT
+# Peut traverser la rivière
+    "兵": [
+        (0,1),#dans son camp 
+    ],
+
+    #SOLDATENFACE
+# A déjà traversé la rivière
+    "兵_": [
+        (1,0),#dans le camp adverse(traverser riviere)
+        (-1,0)#dans le camp adverse(traverser riviere)  
+    ]
 }
 
 # Les pions et leur nom en écriture chinoise
