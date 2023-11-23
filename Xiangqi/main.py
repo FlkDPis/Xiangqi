@@ -2,11 +2,15 @@ import pygame as pg
 from pygame.locals import *
 from variables import *
 from math import *
+from functions import is_case_disponible
 
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 800))
+
+
 def distance(x1, y1, x2, y2):
-    return sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
 
 # Class Case qui permet de savoir où sont les cases
 class Case:
@@ -29,43 +33,58 @@ class Pion:
         self.fr = fr
         self.name = pion.get(self.fr)
         self.x, self.y = pos
-        self.out = False
+        self.outed = False
         self.color = color
-        self.case = cases.get(str(self.x) + "-" + str(self.y))
-        if self.out:
+        self.case = None
+        self.last_case = []
+        for akk, c in cases.items():
+            if c == str(self.x) + "-" + str(self.y):
+                self.case = akk
+        self.liste_actions = (self.case, None)
+        if self.outed:
             self.out()
         self.movements = moves
+        if self.color == 0 and self.fr == "soldat":
+            self.movements = [(0, -1)]
+        if self.case in zones[self.color] and self.fr == "soldat":
+            self.movements.append((1, 0))
+            self.movements.append((-1, 0))
         self.suivre_souris = False
         self.cases_available = []
         for j in range(len(self.movements)):
             a, b = self.movements[j][0], self.movements[j][1]
             n_x, n_y = self.x + (a * 73), self.y + (b * 73)
             for k, v in cases.items():
-                if str(n_x) + "-" + str(n_y) == v and k in palais[self.color]:
-                    self.cases_available.append(k)
+                if is_case_disponible(k, entities):
+                    if str(n_x) + "-" + str(n_y) == v:
+                        if self.fr == "roi" or self.fr == "conseiller":
+                            if k in palais[self.color]:
+                                self.cases_available.append(k)
+                        else:
+                            self.cases_available.append(k)
 
-    def draw(self, screen):
+    def draw(self):
         chemin = None
         c = 1 if self.color == 0 else 0
         font = pg.font.Font(
             chemin,
             35,
         )
-        ecrit = font.render(self.name, True, (couleurs[c]))
+        ecrit = font.render(self.fr[0], True, (couleurs[self.color]))
 
-        surface_size = max(ecrit.get_width(), ecrit.get_height()) + 25
+        surface_size = max(ecrit.get_width(), ecrit.get_height()) + 30
         cercle = pg.Surface((surface_size, surface_size), pg.SRCALPHA)
 
         center = (surface_size // 2, surface_size // 2)
 
-        pg.draw.circle(cercle, couleurs[c], center, surface_size // 2 - 1)
-        pg.draw.circle(cercle, couleurs[self.color], center, surface_size // 2 - 3)
+        pg.draw.circle(cercle, couleurs[self.color], center, surface_size // 2 - 1)
+        pg.draw.circle(cercle, couleurs[c], center, surface_size // 2 - 3)
 
         text_rect = ecrit.get_rect(center=center)
         cercle.blit(ecrit, text_rect.topleft)
         screen.blit(cercle, (self.x - surface_size // 2, self.y - surface_size // 2))
 
-    def out(self, screen):
+    def out(self):
         game.pions.pop(game.pions[self.color][self.name])
         self.name = ""
         screen.blit(self.name, (self.x, self.y))
@@ -156,20 +175,18 @@ game = Game(board, ["Arthur", "Arthur"], pions, cases)
 game.run()
 i = 1
 
-# Test
+# Création de tout les piosn du jeu
 entities = []
 for col, entite in pions.items():
     for g in range(len(entite)):
-        print(entite[g])
         tr = cases.get(spawn[col].get(entite[g])[0])
         del spawn[col][entite[g]][0]
-        w,x = tr.split("-")
+        w, x = tr.split("-")
         pos = (int(w), int(x))
         couleur = 0 if col == "white" else 1
         mov = mouvs.get(pion.get(entite[g]))
         pion_entite = Pion(pos, entite[g], couleur, mov)
         entities.append(pion_entite)
-        print(1)
 
 # Boucle principale du jeu
 while game.running:
@@ -182,12 +199,21 @@ while game.running:
                 roi_x, roi_y = ent.x, ent.y
                 distance_to_roi = distance(roi_x, roi_y, mouse_x, mouse_y)
                 if distance_to_roi <= 30:
-                    ent.suivre_souris = True
+                    if len(ent.cases_available) == 0:
+                        ent.suivre_souris = False
+                        vx, vy = cases.get(ent.case).split("-")
+                        vx = int(vx)
+                        vy = int(vy)
+                        ent.x = vx
+                        ent.y = vy
+                    else:
+                        ent.suivre_souris = True
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
                 if ent.suivre_souris:
                     event_x, event_y = ent.x, ent.y
                     b = {}
+                    ent.cases_available.append(ent.case)
                     for j in range(len(ent.cases_available)):
                         pos_e = cases.get(ent.cases_available[j])
                         xx, yy = pos_e.split("-")
@@ -195,7 +221,6 @@ while game.running:
                         yy = int(yy)
                         d = distance(event_x, event_y, xx, yy)
                         b[d] = ent.cases_available[j]
-                        print(ent.cases_available)
 
                     sorted_b = dict(sorted(b.items()))
                     ak = 0
@@ -205,36 +230,51 @@ while game.running:
                             x, y = c.split("-")
                             x = int(x)
                             y = int(y)
-                            ent.x = x
-                            ent.y = y
-                            ent.case = cases.get(str(ent.x) + "-" + str(ent.y))
-                            ak = 1
+
+                            # Vérifier si la case cible n'est pas occupée par un autre pion
+                            case_occupee = False
+                            for autre_ent in entities:
+                                if autre_ent.case == v:
+                                    case_occupee = True
+                                    break
+
+                            if not case_occupee:
+                                # Déplacer le pion uniquement si la case n'est pas occupée
+                                ent.x = x
+                                ent.y = y
+                                ent.case = v
+                                ent.last_case.append(v)
+                                ent.liste_actions = (v, ent.liste_actions)
+                                ak = 1
+
                     ent.cases_available = []
+                    abc = False
                     for j in range(len(ent.movements)):
                         g_x, h_y = ent.movements[j][0], ent.movements[j][1]
                         n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
                         for k, v in cases.items():
-                            if entite.fr == 'roi':
-                                if k in palais[entite.color]:
-                                   ent.cases_available.append(k)
-                            elif str(n_x) + "-" + str(n_y) == v:
-                                ent.cases_available.append(k)
-                    ent.suivre_souris = False
-                else:
-                    ent.suivre_souris = False
+                            if str(n_x) + "-" + str(n_y) == v:
+                                if is_case_disponible(k, entities):
+                                    if ent.fr == "roi" or ent.fr == "conseiller":
+                                        if k in palais[ent.color]:
+                                            ent.cases_available.append(k)
+                                    else:
+                                        ent.cases_available.append(k)
+                        ent.suivre_souris = False
 
     screen.fill((255, 206, 162))
     board.draw_board()
+
     for ent in entities:
-        ent.draw(screen)
+        ent.draw()
+
     if i == 1:
-        print(cases)
-        print(pions)
         i += 1
+
     for ent in entities:
         if ent.suivre_souris:
             ent.x, ent.y = pg.mouse.get_pos()
-        
+
     pg.display.flip()
 
 pg.quit()
