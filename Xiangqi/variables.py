@@ -1,12 +1,25 @@
 # Variables principales du jeu
 cases = {}
-pions = {"white": {}, "black": {}}
+pions = {"white": [], "black": []}
 couleurs = [(0, 0, 0), (255, 255, 255)]
-letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]    
+letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
 # Cases du palais noir et blanc
-palais = [["H4", "H5", "H6", "I4", "I5", "I6", "J4", "J5", "J6"],["A4", "A5", "A6", "B4", "B5", "B6", "C4", "C5", "C6"]]
-zone_w = []
+palais = [
+    ["H4", "H5", "H6", "I4", "I5", "I6", "J4", "J5", "J6"],
+    ["A4", "A5", "A6", "B4", "B5", "B6", "C4", "C5", "C6"],
+]
+zones = [
+    [],
+    [],
+]
+
+for y in letters:
+    for j in range(1, 9):
+        if y == "A" or "B" or "C" or "D" or "E":
+            zones[0].append(y + str(j))
+        else:
+            zones[1].append(y + str(j))
 
 
 # Case d'apparition des pions blancs et noirs
@@ -31,108 +44,81 @@ spawn = {
     },
 }
 
+for col, it in pions.items():
+    for piece, positions in spawn[col].items():
+        for i in range(len(positions)):
+            pions[col].append(piece)
+
+
 # Mouvements autorisé pour chaque pion
 mouvs = {
-# Aucune pièce ne peut sauter au dessus d'une autre
-# sauf excpetion 
-
-    #ROI
-# Ne peut pas sortir du palais
+    # Aucune pièce ne peut sauter au dessus d'une autre
+    # sauf excpetion
+    # ROI
+    # Ne peut pas sortir du palais
     "帥": [
         (1, 0),
         (0, 1),
         (-1, 0),
         (0, -1),
     ],
-    
-    #CONSEILLER
-# Ne peut pas sortir du palais
-    "仕": [
-        (1,1),
-        (-1,1),
-        (-1,-1),
-        (1,-1)
-    ],
-
-    #ELEPHANT
-# Ne peut pas traverser la rivière
-    "象": [
-        (2,2),
-        (-2,2),
-        (-2,-2),
-        (2,-2)
-    ],
-
-    #CHEVAL
-# Peut traverser la rivière
-    "馬": [
-        (1,2),
-        (-1,2),
-        (-2,1),
-        (-2,-1),
-        (2,1),
-        (2,-1),
-        (1,-2),
-        (-1,-2)
-    ],
-
-    #CHARIOT
-# Peut traverser la rivière
+    # CONSEILLER
+    # Ne peut pas sortir du palais
+    "仕": [(1, 1), (-1, 1), (-1, -1), (1, -1)],
+    # ELEPHANT
+    # Ne peut pas traverser la rivière
+    "象": [(2, 2), (-2, 2), (-2, -2), (2, -2)],
+    # CHEVAL
+    # Peut traverser la rivière
+    "馬": [(1, 2), (-1, 2), (-2, 1), (-2, -1), (2, 1), (2, -1), (1, -2), (-1, -2)],
+    # CHARIOT
+    # Peut traverser la rivière
     "車": [
-        (0,1),
-        (0,2),
-        (0,3),
-        (0,4),
-        (0,5),
-        (0,6),
-        (0,7),
-        (0,8),
-        (0,9),
-        (1,0),
-        (2,0),
-        (3,0),
-        (4,0),
-        (5,0),
-        (6,0),
-        (7,0),
-        (8,0)
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (0, 5),
+        (0, 6),
+        (0, 7),
+        (0, 8),
+        (0, 9),
+        (1, 0),
+        (2, 0),
+        (3, 0),
+        (4, 0),
+        (5, 0),
+        (6, 0),
+        (7, 0),
+        (8, 0),
     ],
-
-    #CANON
-# Doit sauter sur une pièce pour capturer une autre
-# Peut traverser la rivière
+    # CANON
+    # Doit sauter sur une pièce pour capturer une autre
+    # Peut traverser la rivière
     "砲": [
-        (0,1),
-        (0,2),
-        (0,3),
-        (0,4),
-        (0,5),
-        (0,6),
-        (0,7),
-        (0,8),
-        (0,9),
-        (1,0),
-        (2,0),
-        (3,0),
-        (4,0),
-        (5,0),
-        (6,0),
-        (7,0),
-        (8,0)
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (0, 5),
+        (0, 6),
+        (0, 7),
+        (0, 8),
+        (0, 9),
+        (1, 0),
+        (2, 0),
+        (3, 0),
+        (4, 0),
+        (5, 0),
+        (6, 0),
+        (7, 0),
+        (8, 0),
     ],
-
-    #SOLDAT
-# Peut traverser la rivière
+    # SOLDAT
+    # Peut traverser la rivière
     "兵": [
-        (0,1),#dans son camp 
+        (0, 1),  # dans son camp
     ],
-
-    #SOLDATENFACE
-# A déjà traversé la rivière
-    "兵_": [
-        (1,0),#dans le camp adverse(traverser riviere)
-        (-1,0)#dans le camp adverse(traverser riviere)  
-    ]
 }
 
 # Les pions et leur nom en écriture chinoise
@@ -149,28 +135,27 @@ pion = {
 # Position de chaque lettre (A,B,C,D etc)
 positions = {
     "y": {
-        "A": 75 ,
-        "B": 148 ,
-        "C": 221 ,
-        "D": 294 ,
-        "E": 367 ,
-        "F": 440 ,
-        "G": 513 ,
-        "H": 586 ,
-        "I": 659 ,
-        "J": 732 ,
+        "A": 75,
+        "B": 148,
+        "C": 221,
+        "D": 294,
+        "E": 367,
+        "F": 440,
+        "G": 513,
+        "H": 586,
+        "I": 659,
+        "J": 732,
     },
     "x": {
-        "1": 75 ,
-        "2": 148 ,
-        '3': 221 ,
-        "4": 294 ,
-        "4": 367 ,
-        "5": 440 ,
-        "6": 513 ,
-        "7": 586 ,
-        "8": 659 ,
-        "9": 659 + 73 ,
+        "1": 75,
+        "2": 148,
+        "3": 221,
+        "4": 294,
+        "5": 367,
+        "6": 440,
+        "7": 513,
+        "8": 586,
+        "9": 659,
     },
 }
 
