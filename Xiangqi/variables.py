@@ -16,7 +16,7 @@ zones = [
 
 for y in letters:
     for j in range(1, 9):
-        if y == "A" or "B" or "C" or "D" or "E":
+        if y == "A" or y == "B" or y == "C" or y == "D" or y == "E":
             zones[0].append(y + str(j))
         else:
             zones[1].append(y + str(j))
