@@ -46,9 +46,6 @@ class Pion:
         self.movements = moves
         if self.color == 0 and self.fr == "soldat":
             self.movements = [(0, -1)]
-        if self.case in zones[self.color] and self.fr == "soldat":
-            self.movements.append((1, 0))
-            self.movements.append((-1, 0))
         self.suivre_souris = False
         self.cases_available = []
         for j in range(len(self.movements)):
@@ -233,7 +230,7 @@ while game.running:
 
                             # Vérifier si la case cible n'est pas occupée par un autre pion
                             case_occupee = False
-                            for autre_ent in entities:
+                            for autre_ent in entities: 
                                 if autre_ent.case == v:
                                     case_occupee = True
                                     break
@@ -246,6 +243,9 @@ while game.running:
                                 ent.last_case.append(v)
                                 ent.liste_actions = (v, ent.liste_actions)
                                 ak = 1
+                                if ent.case in zones[ent.color] and ent.fr == "soldat":
+                                    ent.movements.append((1, 0))
+                                    ent.movements.append((-1, 0))
 
                     ent.cases_available = []
                     abc = False
