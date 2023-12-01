@@ -31,10 +31,10 @@ spawn = {
     },
 }
 
-# Mouvements autorisé pour chaque pion
+# Mouvements autorisés pour chaque pion
 mouvs = {
 # Aucune pièce ne peut sauter au dessus d'une autre
-# sauf excpetion 
+# sauf canon pour tuer
 
     #ROI
 # Ne peut pas sortir du palais
