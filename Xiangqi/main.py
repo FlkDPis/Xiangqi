@@ -21,10 +21,12 @@ class Case:
 
 # Class Players qui permet de créer les joueurs
 class Players:
-    def __init__(self, name, pions):
+    def __init__(self, name, pions, col):
         self.name = name
-        self.points = 0
+        self.gagne = False
         self.pions = pions
+        self.color = col
+        self.tour = 0
 
 
 # Class Pion qui crée les pions du jeu avec leur nom etc
@@ -36,6 +38,7 @@ class Pion:
         self.outed = False
         self.color = color
         self.case = None
+        self.case_eat = []
         self.last_case = []
         for akk, c in cases.items():
             if c == str(self.x) + "-" + str(self.y):
@@ -52,7 +55,7 @@ class Pion:
             a, b = self.movements[j][0], self.movements[j][1]
             n_x, n_y = self.x + (a * 73), self.y + (b * 73)
             for k, v in cases.items():
-                if is_case_disponible(k, entities):
+                if is_case_disponible(self, k, entities, self.color):
                     if str(n_x) + "-" + str(n_y) == v:
                         if self.fr == "roi" or self.fr == "conseiller":
                             if k in palais[self.color]:
@@ -61,13 +64,13 @@ class Pion:
                             self.cases_available.append(k)
 
     def draw(self):
-        chemin = None
+        chemin = "Projets\Xiangqi\SIMSUN.ttf"
         c = 1 if self.color == 0 else 0
         font = pg.font.Font(
             chemin,
             35,
         )
-        ecrit = font.render(self.fr[0], True, (couleurs[self.color]))
+        ecrit = font.render(self.name, True, (couleurs[self.color]))
 
         surface_size = max(ecrit.get_width(), ecrit.get_height()) + 30
         cercle = pg.Surface((surface_size, surface_size), pg.SRCALPHA)
@@ -77,14 +80,13 @@ class Pion:
         pg.draw.circle(cercle, couleurs[self.color], center, surface_size // 2 - 1)
         pg.draw.circle(cercle, couleurs[c], center, surface_size // 2 - 3)
 
-        text_rect = ecrit.get_rect(center=center)
+        text_rect = ecrit.get_rect(center=(center[0], center[1] - 2))
         cercle.blit(ecrit, text_rect.topleft)
         screen.blit(cercle, (self.x - surface_size // 2, self.y - surface_size // 2))
 
-    def out(self):
-        game.pions.pop(game.pions[self.color][self.name])
-        self.name = ""
-        screen.blit(self.name, (self.x, self.y))
+    def out(self, entites, pion):
+        self.outed = True
+        entites.remove(pion)
 
 
 # Class Board qui dessine le tableau du jeu d'échec
@@ -232,8 +234,9 @@ while game.running:
                             case_occupee = False
                             for autre_ent in entities: 
                                 if autre_ent.case == v:
-                                    case_occupee = True
-                                    break
+                                    if autre_ent != ent:
+                                        case_occupee = True
+                                        break
 
                             if not case_occupee:
                                 # Déplacer le pion uniquement si la case n'est pas occupée
@@ -243,6 +246,10 @@ while game.running:
                                 ent.last_case.append(v)
                                 ent.liste_actions = (v, ent.liste_actions)
                                 ak = 1
+                                for enti in entities:
+                                    if enti != ent:
+                                        if ent.case == enti.case:
+                                            enti.out(entities, enti)
                                 if ent.case in zones[ent.color] and ent.fr == "soldat":
                                     ent.movements.append((1, 0))
                                     ent.movements.append((-1, 0))
@@ -254,7 +261,7 @@ while game.running:
                         n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
                         for k, v in cases.items():
                             if str(n_x) + "-" + str(n_y) == v:
-                                if is_case_disponible(k, entities):
+                                if is_case_disponible(ent, k, entities, ent.color):
                                     if ent.fr == "roi" or ent.fr == "conseiller":
                                         if k in palais[ent.color]:
                                             ent.cases_available.append(k)
@@ -264,6 +271,22 @@ while game.running:
 
     screen.fill((255, 206, 162))
     board.draw_board()
+
+    for ent in entities:
+        if ent.suivre_souris:
+            ii = 1
+            for case_available in ent.cases_available:
+                x, y = cases[case_available].split("-")
+                x = int(x)
+                y = int(y)
+                x1,y1 = cases[ent.case].split("-")
+                x1 = int(x1)
+                y1 = int(y1)
+                if ii == 1:
+                    pg.draw.circle(screen, (255, 220, 0), (x1, y1), 10)
+                pg.draw.circle(screen, (0, 147, 255), (x, y), 10)
+                ii = 0
+                    
 
     for ent in entities:
         ent.draw()
