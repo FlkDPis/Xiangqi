@@ -64,7 +64,7 @@ class Pion:
                             self.cases_available.append(k)
 
     def draw(self):
-        chemin = "Projets\Xiangqi\SIMSUN.ttf"
+        chemin = "SIMSUN.ttf"
         c = 1 if self.color == 0 else 0
         font = pg.font.Font(
             chemin,
