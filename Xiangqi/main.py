@@ -2,14 +2,11 @@ import pygame as pg
 from pygame.locals import *
 from variables import *
 from math import *
-from functions import is_case_disponible
+from functions import is_case_disponible, distance
 
 # Initialisation de certaines variables pour le jeu
-screen = pg.display.set_mode((730, 800))
-
-
-def distance(x1, y1, x2, y2):
-    return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+screen = pg.display.set_mode((730, 900))
+pg.display.set_caption("Xiangqi")
 
 
 # Class Case qui permet de savoir où sont les cases
@@ -51,6 +48,10 @@ class Pion:
             self.movements = [(0, -1)]
         self.suivre_souris = False
         self.cases_available = []
+        self.cases_dispo()
+
+    def cases_dispo(self):
+        self.cases_available = []
         for j in range(len(self.movements)):
             a, b = self.movements[j][0], self.movements[j][1]
             n_x, n_y = self.x + (a * 73), self.y + (b * 73)
@@ -64,7 +65,7 @@ class Pion:
                             self.cases_available.append(k)
 
     def draw(self):
-        chemin = "SIMSUN.ttf"
+        chemin = "fonts/SIMSUN.ttf"
         c = 1 if self.color == 0 else 0
         font = pg.font.Font(
             chemin,
@@ -159,13 +160,26 @@ class Game:
         self.running = False
         self.cases = cases
         self.turn = 0
+        self.dernier_mouvement = None
 
     def run(self):
         pg.init()
         self.running = True
 
+    def retour_arriere(self):
+        if self.dernier_mouvement:
+            ent, ancienne_case = self.dernier_mouvement
+            x, y = cases[ancienne_case].split("-")
+            x, y = int(x), int(y)
+            ent.x = x
+            ent.y = y
+            ent.case = ancienne_case
+            ent.last_case.pop()
+            self.dernier_mouvement = None
+            ent.cases_dispo()
 
-# Initialisation des class
+
+# Initialisation de la classe MainMenu pour demander les noms des joueurs
 board = Board()
 game = Game(board, ["Arthur", "Arthur"], pions, cases)
 
@@ -201,12 +215,19 @@ while game.running:
                     if len(ent.cases_available) == 0:
                         ent.suivre_souris = False
                         vx, vy = cases.get(ent.case).split("-")
-                        vx = int(vx)
-                        vy = int(vy)
-                        ent.x = vx
-                        ent.y = vy
+                        ent.last_case.pop()  # Retirer le dernier mouvement sauvegardé
+                        ent.x = int(vx)
+                        ent.y = int(vy)
                     else:
                         ent.suivre_souris = True
+                        # Sauvegarder le dernier mouvement avant de suivre la souris
+                        ent.last_case.append(ent.case)
+
+                    # Gestion du bouton "Retour" lorsqu'un pion a bougé
+            if 75 < mouse_x < 170 and 780 < mouse_y < 815:
+                if pg.mouse.get_pressed()[0]:
+                    # Annuler le dernier mouvement pour le pion qui a bougé
+                    game.retour_arriere()
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
                 if ent.suivre_souris:
@@ -232,28 +253,42 @@ while game.running:
 
                             # Vérifier si la case cible n'est pas occupée par un autre pion
                             case_occupee = False
-                            for autre_ent in entities: 
+                            for autre_ent in entities:
                                 if autre_ent.case == v:
                                     if autre_ent != ent:
                                         case_occupee = True
                                         break
 
                             if not case_occupee:
-                                # Déplacer le pion uniquement si la case n'est pas occupée
-                                ent.x = x
-                                ent.y = y
-                                ent.case = v
-                                ent.last_case.append(v)
-                                ent.liste_actions = (v, ent.liste_actions)
-                                ak = 1
-                                for enti in entities:
-                                    if enti != ent:
-                                        if ent.case == enti.case:
-                                            enti.out(entities, enti)
-                                if ent.case in zones[ent.color] and ent.fr == "soldat":
-                                    ent.movements.append((1, 0))
-                                    ent.movements.append((-1, 0))
-
+                                if not game.dernier_mouvement:
+                                    # Déplacer le pion uniquement si la case n'est pas occupée
+                                    ent.x = x
+                                    ent.y = y
+                                    ent.case = v
+                                    ent.liste_actions = (v, ent.liste_actions)
+                                    if game.dernier_mouvement == None:
+                                        game.dernier_mouvement = (
+                                            ent,
+                                            ent.liste_actions[1][0],
+                                        )
+                                    ak = 1
+                                    for enti in entities:
+                                        if enti != ent:
+                                            if ent.case == enti.case:
+                                                enti.out(entities, enti)
+                                    if (
+                                        ent.case in zones[ent.color]
+                                        and ent.fr == "soldat"
+                                    ):
+                                        ent.movements.append((1, 0))
+                                        ent.movements.append((-1, 0))
+                                else:
+                                    casee = cases[ent.case]
+                                    xc, yc = casee.split("-")
+                                    xc = int(xc)
+                                    yc = int(yc)
+                                    ent.x = xc
+                                    ent.y = yc
                     ent.cases_available = []
                     abc = False
                     for j in range(len(ent.movements)):
@@ -279,14 +314,19 @@ while game.running:
                 x, y = cases[case_available].split("-")
                 x = int(x)
                 y = int(y)
-                x1,y1 = cases[ent.case].split("-")
+                x1, y1 = cases[ent.case].split("-")
                 x1 = int(x1)
                 y1 = int(y1)
                 if ii == 1:
-                    pg.draw.circle(screen, (255, 220, 0), (x1, y1), 10)
-                pg.draw.circle(screen, (0, 147, 255), (x, y), 10)
+                    pg.draw.circle(screen, (255, 220, 29), (x1, y1), 10)
+                pg.draw.circle(screen, (35, 105, 255), (x, y), 10)
                 ii = 0
-                    
+
+    # Dessiner le bouton "Retour"
+    pg.draw.rect(screen, (35, 105, 255), (75, 780, 95, 35), border_radius=3)
+    font = pg.font.Font("fonts/Poppins.ttf", 22)
+    texte_retour = font.render("Retour", True, (255, 255, 255))
+    screen.blit(texte_retour, (85, 780))
 
     for ent in entities:
         ent.draw()
