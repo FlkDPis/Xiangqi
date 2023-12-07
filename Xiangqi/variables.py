@@ -2,6 +2,7 @@
 cases = {}
 pions = {"white": [], "black": []}
 couleurs = [(0, 0, 0), (255, 255, 255)]
+colors = [(255, 50, 0), (0, 0, 0)]
 letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
 # Cases du palais noir et blanc
@@ -180,3 +181,4 @@ positions = {
 for k, v in positions["y"].items():
     for i, j in positions["x"].items():
         cases[k + i] = str(j) + "-" + str(v)
+
