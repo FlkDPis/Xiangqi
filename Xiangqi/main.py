@@ -17,11 +17,10 @@ class Case:
 
 
 # Class Players qui permet de créer les joueurs
-class Players:
-    def __init__(self, name, pions, col):
+class Player:
+    def __init__(self, name, col):
         self.name = name
         self.gagne = False
-        self.pions = pions
         self.color = col
         self.tour = 0
 
@@ -71,15 +70,16 @@ class Pion:
             chemin,
             35,
         )
-        ecrit = font.render(self.name, True, (couleurs[self.color]))
+        ecrit = font.render(self.name, True, (colors[self.color]))
 
         surface_size = max(ecrit.get_width(), ecrit.get_height()) + 30
         cercle = pg.Surface((surface_size, surface_size), pg.SRCALPHA)
 
         center = (surface_size // 2, surface_size // 2)
 
-        pg.draw.circle(cercle, couleurs[self.color], center, surface_size // 2 - 1)
-        pg.draw.circle(cercle, couleurs[c], center, surface_size // 2 - 3)
+        pg.draw.circle(cercle, couleurs[1], center, surface_size // 2 - 1)
+        pg.draw.circle(cercle, colors[self.color], center, surface_size // 2 - 3)
+        pg.draw.circle(cercle, couleurs[1], center, surface_size // 2 - 5)
 
         text_rect = ecrit.get_rect(center=(center[0], center[1] - 2))
         cercle.blit(ecrit, text_rect.topleft)
@@ -161,10 +161,35 @@ class Game:
         self.cases = cases
         self.turn = 0
         self.dernier_mouvement = None
+        self.current_player = None
 
     def run(self):
         pg.init()
+        self.turn = 0
+        self.current_player = self.players[self.turn]
         self.running = True
+
+    def switch_player(self):
+        self.turn = (self.turn + 1) % 2
+        self.current_player = self.players[self.turn]
+        for ent in entities:
+            if isinstance(ent, Pion) and ent.color == self.current_player:
+                ent.cases_dispo()
+        self.dernier_mouvement = None
+
+    def display_current_player(self):
+        font = pg.font.Font("fonts/Poppins.ttf", 22)
+        player_name = self.players[self.turn].name
+        text = f"Au tour de {player_name} de jouer"
+        self.current_player_text = font.render(text, True, (255, 255, 255))
+        pg.draw.rect(screen, (35, 105, 255), (155, 840, 365, 35), border_radius=3)
+        screen.blit(self.current_player_text, (160, 840))
+
+    def validate_move(self, ent):
+        if self.dernier_mouvement is not None:
+            self.dernier_mouvement = None
+            ent.cases_dispo()
+            self.switch_player()
 
     def retour_arriere(self):
         if self.dernier_mouvement:
@@ -174,14 +199,17 @@ class Game:
             ent.x = x
             ent.y = y
             ent.case = ancienne_case
-            ent.last_case.pop()
+            if ent.last_case:
+                ent.last_case.pop()
             self.dernier_mouvement = None
             ent.cases_dispo()
 
 
 # Initialisation de la classe MainMenu pour demander les noms des joueurs
 board = Board()
-game = Game(board, ["Arthur", "Arthur"], pions, cases)
+Arthur = Player("Arthur", 0)
+Raphael = Player("Raphael", 1)
+game = Game(board, [Arthur, Raphael], pions, cases)
 
 
 # Utilisation des class
@@ -212,22 +240,32 @@ while game.running:
                 roi_x, roi_y = ent.x, ent.y
                 distance_to_roi = distance(roi_x, roi_y, mouse_x, mouse_y)
                 if distance_to_roi <= 30:
-                    if len(ent.cases_available) == 0:
-                        ent.suivre_souris = False
-                        vx, vy = cases.get(ent.case).split("-")
-                        ent.last_case.pop()  # Retirer le dernier mouvement sauvegardé
-                        ent.x = int(vx)
-                        ent.y = int(vy)
-                    else:
-                        ent.suivre_souris = True
-                        # Sauvegarder le dernier mouvement avant de suivre la souris
-                        ent.last_case.append(ent.case)
+                    # Vérifier si le joueur peut bouger ce pion
+                    if ent.color == game.current_player.color:
+                        if len(ent.cases_available) == 0:
+                            ent.suivre_souris = False
+                            vx, vy = cases.get(ent.case).split("-")
+                            if ent.last_case:
+                                ent.last_case.pop()  # Retirer le dernier mouvement sauvegardé
+                            ent.x = int(vx)
+                            ent.y = int(vy)
+                            game.selected_pion = None
+                        else:
+                            ent.suivre_souris = True
+                            # Sauvegarder le dernier mouvement avant de suivre la souris
+                            ent.last_case.append(ent.case)
+                            game.selected_pion = ent
 
-                    # Gestion du bouton "Retour" lorsqu'un pion a bougé
+            # Gestion du bouton "Retour" lorsqu'un pion a bougé
             if 75 < mouse_x < 170 and 780 < mouse_y < 815:
                 if pg.mouse.get_pressed()[0]:
-                    # Annuler le dernier mouvement pour le pion qui a bougé
                     game.retour_arriere()
+
+            # Gestion du bouton "Valider" pour confirmer le mouvement
+            elif 180 < mouse_x < 275 and 780 < mouse_y < 815:
+                if pg.mouse.get_pressed()[0]:
+                    game.validate_move(ent)
+
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
                 if ent.suivre_souris:
@@ -289,6 +327,9 @@ while game.running:
                                     yc = int(yc)
                                     ent.x = xc
                                     ent.y = yc
+                                for enties in entities:
+                                    if len(enties.cases_available) == 0:
+                                        enties.cases_dispo()
                     ent.cases_available = []
                     abc = False
                     for j in range(len(ent.movements)):
@@ -322,11 +363,20 @@ while game.running:
                 pg.draw.circle(screen, (35, 105, 255), (x, y), 10)
                 ii = 0
 
+    # Afficher le texte du joueur actuel
+    game.display_current_player()
+
     # Dessiner le bouton "Retour"
     pg.draw.rect(screen, (35, 105, 255), (75, 780, 95, 35), border_radius=3)
     font = pg.font.Font("fonts/Poppins.ttf", 22)
     texte_retour = font.render("Retour", True, (255, 255, 255))
     screen.blit(texte_retour, (85, 780))
+
+    # Dessiner le bouton "Valider"
+    pg.draw.rect(screen, (35, 105, 255), (180, 780, 95, 35), border_radius=3)
+    font = pg.font.Font("fonts/Poppins.ttf", 22)
+    texte_valider = font.render("Valider", True, (255, 255, 255))
+    screen.blit(texte_valider, (190, 780))
 
     for ent in entities:
         ent.draw()
