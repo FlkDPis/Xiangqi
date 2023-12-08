@@ -178,12 +178,23 @@ class Game:
         self.dernier_mouvement = None
 
     def display_current_player(self):
-        font = pg.font.Font("fonts/Poppins.ttf", 22)
+        font = pg.font.Font("fonts/Poppins.ttf", 30)
+        font2 = pg.font.Font("fonts/Poppins.ttf", 18)
         player_name = self.players[self.turn].name
-        text = f"Au tour de {player_name} de jouer"
+        text = f"{player_name}"
+        txt1 = "Au tour de :"
+        t1 = font2.render(txt1, True, (255, 255, 255))
         self.current_player_text = font.render(text, True, (255, 255, 255))
-        pg.draw.rect(screen, (35, 105, 255), (155, 840, 365, 35), border_radius=3)
-        screen.blit(self.current_player_text, (160, 840))
+        points1 = [(100, 820), (350, 820), (320, 885), (100, 885)]
+        points2 = [(350, 820), (450, 820), (450, 885), (320, 885)]
+        c = 1 if self.turn == 0 else 0
+        txt2 = f"{self.players[c].name}"
+        t2 = font2.render(txt2, True, (255, 255, 255))
+        pg.draw.polygon(screen, colss[self.turn], points1)
+        pg.draw.polygon(screen, colss[c], points2)
+        screen.blit(t1, ((110, 820)))
+        screen.blit(t2, ((345, 840)))
+        screen.blit(self.current_player_text, (110, 840))
 
     def validate_move(self, ent):
         if self.dernier_mouvement is not None:
@@ -262,7 +273,7 @@ while game.running:
                     game.retour_arriere()
 
             # Gestion du bouton "Valider" pour confirmer le mouvement
-            elif 180 < mouse_x < 275 and 780 < mouse_y < 815:
+            elif 570 < mouse_x < 665 and 780 < mouse_y < 815:
                 if pg.mouse.get_pressed()[0]:
                     game.validate_move(ent)
 
@@ -373,10 +384,10 @@ while game.running:
     screen.blit(texte_retour, (85, 780))
 
     # Dessiner le bouton "Valider"
-    pg.draw.rect(screen, (35, 105, 255), (180, 780, 95, 35), border_radius=3)
+    pg.draw.rect(screen, (35, 105, 255), (570, 780, 95, 35), border_radius=3)
     font = pg.font.Font("fonts/Poppins.ttf", 22)
     texte_valider = font.render("Valider", True, (255, 255, 255))
-    screen.blit(texte_valider, (190, 780))
+    screen.blit(texte_valider, (580, 780))
 
     for ent in entities:
         ent.draw()
