@@ -52,8 +52,9 @@ class Pion:
     def cases_dispo(self):
         self.cases_available = []
         for j in range(len(self.movements)):
-            a, b = self.movements[j][0], self.movements[j][1]
-            n_x, n_y = self.x + (a * 73), self.y + (b * 73)
+            if len(self.movements[j]) >= 2:
+                a, b = self.movements[j][0], self.movements[j][1]
+                n_x, n_y = self.x + (a * 73), self.y + (b * 73)
             for k, v in cases.items():
                 if is_case_disponible(self, k, entities, self.color):
                     if str(n_x) + "-" + str(n_y) == v:
@@ -344,16 +345,17 @@ while game.running:
                     ent.cases_available = []
                     abc = False
                     for j in range(len(ent.movements)):
-                        g_x, h_y = ent.movements[j][0], ent.movements[j][1]
-                        n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
-                        for k, v in cases.items():
-                            if str(n_x) + "-" + str(n_y) == v:
-                                if is_case_disponible(ent, k, entities, ent.color):
-                                    if ent.fr == "roi" or ent.fr == "conseiller":
-                                        if k in palais[ent.color]:
+                        if len(ent.movements[j]) == 2:
+                            g_x, h_y = ent.movements[j][0], ent.movements[j][1]
+                            n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
+                            for k, v in cases.items():
+                                if str(n_x) + "-" + str(n_y) == v:
+                                    if is_case_disponible(ent, k, entities, ent.color):
+                                        if ent.fr == "roi" or ent.fr == "conseiller":
+                                            if k in palais[ent.color]:
+                                                ent.cases_available.append(k)
+                                        else:
                                             ent.cases_available.append(k)
-                                    else:
-                                        ent.cases_available.append(k)
                         ent.suivre_souris = False
 
     screen.fill((255, 206, 162))
