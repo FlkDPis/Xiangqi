@@ -61,6 +61,9 @@ class Pion:
                         if self.fr == "roi" or self.fr == "conseiller":
                             if k in palais[self.color]:
                                 self.cases_available.append(k)
+                        # elif self.fr == "elephant":
+                        #     if k in zones[self.color]:
+                        #         self.cases_available.append(k)
                         else:
                             self.cases_available.append(k)
 
@@ -193,9 +196,12 @@ class Game:
         t2 = font2.render(txt2, True, (255, 255, 255))
         pg.draw.polygon(screen, colss[self.turn], points1)
         pg.draw.polygon(screen, colss[c], points2)
+        img = pg.image.load('Xiangqi/img/player1.png').convert_alpha()
+        imgPlayer = pg.transform.scale(img, (90*0.81,90))
         screen.blit(t1, ((110+96, 780)))
         screen.blit(t2, ((345+96, 815)))
         screen.blit(self.current_player_text, (110+96, 810))
+        screen.blit(imgPlayer, (330, 790))
 
     def validate_move(self, ent):
         if self.dernier_mouvement is not None:
@@ -215,6 +221,7 @@ class Game:
                 ent.last_case.pop()
             self.dernier_mouvement = None
             ent.cases_dispo()
+        self.dernier_mouvement = None
 
 
 # Initialisation de la classe MainMenu pour demander les noms des joueurs
@@ -323,7 +330,7 @@ while game.running:
                                         )
                                     ak = 1
                                     for enti in entities:
-                                        if enti != ent:
+                                        if enti.color != ent.color:
                                             if ent.case == enti.case:
                                                 enti.out(entities, enti)
                                     if (
@@ -373,7 +380,7 @@ while game.running:
                 y1 = int(y1)
                 if ii == 1:
                     pg.draw.circle(screen, (255, 220, 29), (x1, y1), 10)
-                pg.draw.circle(screen, (35, 105, 255), (x, y), 10)
+                pg.draw.circle(screen, (35, 105, 255), (x, y), 40)
                 ii = 0
 
     # Afficher le texte du joueur actuel
@@ -390,6 +397,7 @@ while game.running:
     font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
     texte_valider = font.render("Valider", True, (255, 255, 255))
     screen.blit(texte_valider, (580, 810))
+
 
     for ent in entities:
         ent.draw()
