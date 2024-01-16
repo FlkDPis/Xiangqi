@@ -40,8 +40,6 @@ class Pion:
             if c == str(self.x) + "-" + str(self.y):
                 self.case = akk
         self.liste_actions = (self.case, None)
-        if self.outed:
-            self.out()
         self.movements = moves
         if self.color == 0 and self.fr == "soldat":
             self.movements = [(0, -1)]
@@ -189,19 +187,23 @@ class Game:
         txt1 = "Au tour de :"
         t1 = font2.render(txt1, True, (255, 255, 255))
         self.current_player_text = font.render(text, True, (255, 255, 255))
-        points1 = [(100+96, 780), (350+96, 780), (320+96, 878), (100+96, 878)]
-        points2 = [(350+96, 780), (450+96, 780), (450+96, 878), (320+96, 878)]
+        points1 = [(100 + 96, 780), (350 + 96, 780), (320 + 96, 878), (100 + 96, 878)]
+        points2 = [(350 + 96, 780), (450 + 96, 780), (450 + 96, 878), (320 + 96, 878)]
         c = 1 if self.turn == 0 else 0
         txt2 = f"{self.players[c].name}"
         t2 = font2.render(txt2, True, (255, 255, 255))
         pg.draw.polygon(screen, colss[self.turn], points1)
         pg.draw.polygon(screen, colss[c], points2)
-        img = pg.image.load('Xiangqi/img/player1.png').convert_alpha()
-        imgPlayer = pg.transform.scale(img, (90*0.81,90))
-        screen.blit(t1, ((110+96, 780)))
-        screen.blit(t2, ((345+96, 815)))
-        screen.blit(self.current_player_text, (110+96, 810))
-        screen.blit(imgPlayer, (330, 790))
+        img = (
+            pg.image.load("Xiangqi/img/player1.png").convert_alpha()
+            if self.turn == 0
+            else pg.image.load("Xiangqi/img/player2.png").convert_alpha()
+        )
+        imgPlayer = pg.transform.scale(img, (90 * 0.81, 90))
+        screen.blit(t1, ((110 + 96, 780)))
+        screen.blit(t2, ((345 + 96, 815)))
+        screen.blit(self.current_player_text, (110 + 96, 810))
+        screen.blit(imgPlayer, (330, 789))
 
     def validate_move(self, ent):
         if self.dernier_mouvement is not None:
@@ -313,21 +315,24 @@ while game.running:
                             for autre_ent in entities:
                                 if autre_ent.case == v:
                                     if autre_ent != ent:
-                                        case_occupee = True
-                                        break
+                                        if autre_ent.color == ent.color:
+                                            case_occupee = True
+                                            break
 
                             if not case_occupee:
                                 if not game.dernier_mouvement:
                                     # Déplacer le pion uniquement si la case n'est pas occupée
                                     ent.x = x
                                     ent.y = y
+                                    last_case = ent.case
                                     ent.case = v
                                     ent.liste_actions = (v, ent.liste_actions)
-                                    if game.dernier_mouvement == None:
-                                        game.dernier_mouvement = (
-                                            ent,
-                                            ent.liste_actions[1][0],
-                                        )
+                                    if game.dernier_mouvement is None:
+                                        if ent.case != last_case:
+                                            game.dernier_mouvement = (
+                                                ent,
+                                                ent.liste_actions[1][0],
+                                            )
                                     ak = 1
                                     for enti in entities:
                                         if enti.color != ent.color:
@@ -337,8 +342,8 @@ while game.running:
                                         ent.case in zones[ent.color]
                                         and ent.fr == "soldat"
                                     ):
-                                        ent.movements.append((1, ))
-                                        ent.movements.append((-1, ))
+                                        ent.movements.append((1,))
+                                        ent.movements.append((-1,))
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
@@ -397,7 +402,6 @@ while game.running:
     font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
     texte_valider = font.render("Valider", True, (255, 255, 255))
     screen.blit(texte_valider, (580, 810))
-
 
     for ent in entities:
         ent.draw()
