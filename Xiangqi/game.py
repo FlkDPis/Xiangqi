@@ -65,9 +65,9 @@ class Pion:
                             else:
                                 self.cases_available.append(k)
 
-        # self.update_cases_avaiblable(
-        #     self.update_board_after_v(self.display_board_with_pawns_and_moves())
-        # )
+        self.update_cases_avaiblable(
+            self.update_board_after_v(self.display_board_with_pawns_and_moves())
+        )
 
     def display_board_with_pawns_and_moves(self):
         board_representation = [
@@ -400,7 +400,7 @@ game = Game(board, [Arthur, Raphael], pions, cases)
 
 # Utilisation des class
 game.run()
-i = 1
+i, start = 1 , True
 
 # Création de tout les piosn du jeu
 entities = []
@@ -418,6 +418,10 @@ for col, entite in pions.items():
 # Boucle principale du jeu
 while game.running:
     for event in pg.event.get():
+        if start:
+            for ent in entities:
+                ent.cases_dispo()
+            start = False
         if event.type == pg.QUIT:
             game.running = False
         elif event.type == pg.MOUSEBUTTONDOWN:
@@ -527,11 +531,6 @@ while game.running:
                     # abc = ent.update_board_after_v(step1)
                     # for row in abc:
                     #     print(row)
-                    ent.update_cases_avaiblable(
-                        ent.update_board_after_v(
-                            ent.display_board_with_pawns_and_moves()
-                        )
-                    )
 
     screen.fill((255, 206, 162))
     board.draw_board()
