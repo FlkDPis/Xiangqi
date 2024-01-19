@@ -46,7 +46,7 @@ class Pion:
         self.suivre_souris = False
         self.cases_available = []
 
-    def cases_dispo(self):
+    def cases_dispo(self):  
         self.cases_available = []
         for j in range(len(self.movements)):
             if len(self.movements[j]) >= 2:
@@ -63,10 +63,11 @@ class Pion:
                                     self.cases_available.append(k)
                             else:
                                 self.cases_available.append(k)
-        # if self.fr == 'elephant' or self.fr == "chariot" or self.fr == "cheval":
-        #     self.update_cases_avaiblable(
-        #         self.update_board_after_v(self.display_board_with_pawns_and_moves())
-        #     )
+
+        if self.fr == "chariot":
+            self.update_cases_avaiblable(
+                self.update_board_after_v(self.display_board_with_pawns_and_moves())
+            )
 
     def display_board_with_pawns_and_moves(self):
         board_representation = [
@@ -100,10 +101,12 @@ class Pion:
                 if current_case in self.cases_available:
                     board_representation[i][j] = "O"  # Disponible
 
-        return board_representation
         # Afficher le tableau
         # for row in board_representation:
         #     print(row)
+        # print('--------------------------------------------------------')
+
+        return board_representation
 
     def update_board_after_v(self, board):
         updated_board = [row.copy() for row in board]
@@ -121,52 +124,40 @@ class Pion:
             v_row, v_col = v_position
 
             # Haut depuis V
-            RB_h = 0
-            for i in range(0, 8):
+            RB_h = True
+            for i in range(0, 9):
                 if board[i][v_col]:
                     if board[i][v_col] == "B" or board[i][v_col] == "R":
-                        RB_h = i
-                        break
-            for j in range(0, 8 - RB_h):
-                if board[RB_h - j][v_col]:
-                    if board[RB_h - j][v_col] == "O":
-                        lst_update.append((RB_h - j, v_col))
+                        RB_h = False
+                    if RB_h:
+                        lst_update.append((i, v_col))
 
             # Bas depuis V
-            RB_b = 0
-            for i in range(0, -8):
+            RB_b = True
+            for i in range(0, -9):
                 if board[i][v_col]:
                     if board[i][v_col] == "B" or board[i][v_col] == "R":
-                        RB_b = i
-                        break
-            for j in range(0, 8 - RB_b):
-                if board[RB_b + j][v_col]:
-                    if board[RB_b + j][v_col] == "O":
-                        lst_update.append((RB_b + j, v_col))
+                        RB_b = False
+                    if RB_b:
+                        lst_update.append((i, v_col))
 
             # Gauche depuis V
-            RB_g = 0
+            RB_g = True
             for i in range(0, -10):
                 if board[v_row][i]:
                     if board[v_row][i] == "B" or board[v_row][i] == "R":
-                        RB_g = i
-                        break
-            for j in range(0, 10 - RB_g):
-                if board[v_row][RB_g - j]:
-                    if board[v_row][RB_g - j] == "O":
-                        lst_update.append((v_row, RB_g - j))
+                        RB_g = False
+                    if RB_g:
+                        lst_update.append((v_row, i))
 
             # Droite depuis V
-            RB_d = 0
+            RB_d = True
             for i in range(0, 9):
                 if board[v_row][i]:
                     if board[v_row][i] == "B" or board[v_row][i] == "R":
-                        RB_d = i
-                        break
-            for j in range(0, 9 - RB_d):
-                if board[v_row][RB_d + j]:
-                    if board[v_row][RB_d + j] == "O":
-                        lst_update.append((v_row, RB_d + j))
+                        RB_d = False
+                    if RB_d:
+                        lst_update.append((v_row, i))
 
             for pos in lst_update:
                 col, row = pos
@@ -217,15 +208,15 @@ class Pion:
                 if board1[i][j] == "HH":
                     case_update.append(board[i][j])
 
-        # print("Case à update :", case_update)
-        # print("Case disponibles : ", self.cases_available)
+        print("Case à update :", case_update)
+        print("Case disponibles : ", self.cases_available)
 
         new_cases_available = []
         for case in self.cases_available:
             if case not in case_update:
                 new_cases_available.append(case)
 
-        # print("Nouvelles cases disponibles : ", new_cases_available)
+        print("Nouvelles cases disponibles : ", new_cases_available)
 
         self.cases_available = new_cases_available
 
@@ -523,13 +514,16 @@ while game.running:
                                     enties.cases_dispo()
                         ent.cases_dispo()
                         ent.suivre_souris = False
-                    # step1 = ent.display_board_with_pawns_and_moves()
-                    # for rcol in step1:
-                    #     print(rcol)
-                    # abc = ent.update_board_after_v(step1)
-                    # for row in abc:
-                    #     print(row)
-
+                    print(str(ent.fr) + ':' + str(ent.case))
+                    step1 = ent.display_board_with_pawns_and_moves()
+                    for rcol in step1:
+                        print(rcol)
+                    abc = ent.update_board_after_v(step1)
+                    for row in abc:
+                        print(row)
+                    ent.update_cases_avaiblable(
+                        ent.update_board_after_v(ent.display_board_with_pawns_and_moves())
+                    )
     screen.fill((255, 206, 162))
     board.draw_board()
 
