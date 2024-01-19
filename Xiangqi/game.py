@@ -45,7 +45,6 @@ class Pion:
             self.movements = [(0, -1)]
         self.suivre_souris = False
         self.cases_available = []
-        self.cases_dispo()
 
     def cases_dispo(self):
         self.cases_available = []
@@ -64,10 +63,10 @@ class Pion:
                                     self.cases_available.append(k)
                             else:
                                 self.cases_available.append(k)
-
-        self.update_cases_avaiblable(
-            self.update_board_after_v(self.display_board_with_pawns_and_moves())
-        )
+        # if self.fr == 'elephant' or self.fr == "chariot" or self.fr == "cheval":
+        #     self.update_cases_avaiblable(
+        #         self.update_board_after_v(self.display_board_with_pawns_and_moves())
+        #     )
 
     def display_board_with_pawns_and_moves(self):
         board_representation = [
@@ -521,8 +520,7 @@ while game.running:
                                     ent.x = xc
                                     ent.y = yc
                                 for enties in entities:
-                                    if len(enties.cases_available) == 0:
-                                        enties.cases_dispo()
+                                    enties.cases_dispo()
                         ent.cases_dispo()
                         ent.suivre_souris = False
                     # step1 = ent.display_board_with_pawns_and_moves()
