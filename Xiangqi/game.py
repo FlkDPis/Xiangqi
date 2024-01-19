@@ -64,9 +64,10 @@ class Pion:
                                     self.cases_available.append(k)
                             else:
                                 self.cases_available.append(k)
-        self.update_cases_avaiblable(
-            self.update_board_after_v(self.display_board_with_pawns_and_moves())
-        )
+
+        # self.update_cases_avaiblable(
+        #     self.update_board_after_v(self.display_board_with_pawns_and_moves())
+        # )
 
     def display_board_with_pawns_and_moves(self):
         board_representation = [
@@ -122,55 +123,55 @@ class Pion:
 
             # Haut depuis V
             RB_h = 0
-            for i in range(1, 9):
+            for i in range(0, 8):
                 if board[i][v_col]:
                     if board[i][v_col] == "B" or board[i][v_col] == "R":
                         RB_h = i
                         break
-            for j in range(1, 9 - RB_h):
+            for j in range(0, 8 - RB_h):
                 if board[RB_h - j][v_col]:
                     if board[RB_h - j][v_col] == "O":
                         lst_update.append((RB_h - j, v_col))
 
             # Bas depuis V
             RB_b = 0
-            for i in range(-1, -9):
+            for i in range(0, -8):
                 if board[i][v_col]:
                     if board[i][v_col] == "B" or board[i][v_col] == "R":
                         RB_b = i
                         break
-            for j in range(1, -9 + RB_b):
-                if board[j][v_col]:
-                    if board[RB_b - j][v_col] == "O":
-                        lst_update.append((j, v_col))
+            for j in range(0, 8 - RB_b):
+                if board[RB_b + j][v_col]:
+                    if board[RB_b + j][v_col] == "O":
+                        lst_update.append((RB_b + j, v_col))
 
             # Gauche depuis V
             RB_g = 0
-            for i in range(-1, -10):
+            for i in range(0, -10):
                 if board[v_row][i]:
                     if board[v_row][i] == "B" or board[v_row][i] == "R":
                         RB_g = i
                         break
-            for j in range(1, -10 + RB_g):
-                if board[v_row][j]:
-                    if board[v_row][j] == "O":
-                        lst_update.append((v_row, j))
+            for j in range(0, 10 - RB_g):
+                if board[v_row][RB_g - j]:
+                    if board[v_row][RB_g - j] == "O":
+                        lst_update.append((v_row, RB_g - j))
 
             # Droite depuis V
             RB_d = 0
-            for i in range(1, 9):
+            for i in range(0, 9):
                 if board[v_row][i]:
                     if board[v_row][i] == "B" or board[v_row][i] == "R":
                         RB_d = i
                         break
-            for j in range(1, 10 - RB_d):
-                if board[v_row][j]:
-                    if board[v_row][j] == "O":
-                        lst_update.append((v_row, j))
+            for j in range(0, 9 - RB_d):
+                if board[v_row][RB_d + j]:
+                    if board[v_row][RB_d + j] == "O":
+                        lst_update.append((v_row, RB_d + j))
 
             for pos in lst_update:
                 col, row = pos
-                board[row][col] = "HH"
+                updated_board[col][row] = "HH"
 
             # def update_direction(row_step, col_step):
             #     for i in range(1, 9):
@@ -217,9 +218,17 @@ class Pion:
                 if board1[i][j] == "HH":
                     case_update.append(board[i][j])
 
-        for x in self.cases_available:
-            if x in case_update:
-                self.cases_available.remove(x)
+        # print("Case à update :", case_update)
+        # print("Case disponibles : ", self.cases_available)
+
+        new_cases_available = []
+        for case in self.cases_available:
+            if case not in case_update:
+                new_cases_available.append(case)
+
+        # print("Nouvelles cases disponibles : ", new_cases_available)
+
+        self.cases_available = new_cases_available
 
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
@@ -512,12 +521,17 @@ while game.running:
                                         enties.cases_dispo()
                         ent.cases_dispo()
                         ent.suivre_souris = False
-                    step1 = ent.display_board_with_pawns_and_moves()
-                    for rcol in step1:
-                        print(rcol)
-                    abc = ent.update_board_after_v(step1)
-                    for row in abc:
-                        print(row)
+                    # step1 = ent.display_board_with_pawns_and_moves()
+                    # for rcol in step1:
+                    #     print(rcol)
+                    # abc = ent.update_board_after_v(step1)
+                    # for row in abc:
+                    #     print(row)
+                    ent.update_cases_avaiblable(
+                        ent.update_board_after_v(
+                            ent.display_board_with_pawns_and_moves()
+                        )
+                    )
 
     screen.fill((255, 206, 162))
     board.draw_board()
