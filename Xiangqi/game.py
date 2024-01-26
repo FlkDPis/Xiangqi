@@ -133,11 +133,11 @@ class Pion:
                         lst_update.append((i, v_col))
 
             # Bas depuis V
-            RB_b = True
-            for i in range(0, -9):
-                if board[i][v_col]:
-                    if board[i][v_col] == "B" or board[i][v_col] == "R":
-                        RB_b = False
+            RB_b = False
+            for i in range(0, 9):
+                if board[-i][v_col]:
+                    if board[-i][v_col] == "B" or board[-i][v_col] == "R":
+                        RB_b = True
                     if RB_b:
                         lst_update.append((i, v_col))
 
@@ -501,8 +501,8 @@ while game.running:
                                         ent.case in zones[ent.color]
                                         and ent.fr == "soldat"
                                     ):
-                                        ent.movements.append((1,))
-                                        ent.movements.append((-1,))
+                                        ent.movements.append((1,0))
+                                        ent.movements.append((-1,0))
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
