@@ -342,8 +342,8 @@ while game.running:
                                         ent.case in zones[ent.color]
                                         and ent.fr == "soldat"
                                     ):
-                                        ent.movements.append((1,))
-                                        ent.movements.append((-1,))
+                                        ent.movements.append((1,0))
+                                        ent.movements.append((-1,0))
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
