@@ -32,7 +32,7 @@ spawn = {
         "elephant": ["J3", "J7"],
         "cheval": ["J2", "J8"],
         "chariot": ["J1", "J9"],
-        "canon": ["H1", "H9"],
+        "canon": ["H2", "H8"],
         "soldat": ["G1", "G3", "G5", "G7", "G9"],
     },
     "black": {
