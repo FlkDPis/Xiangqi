@@ -250,6 +250,9 @@ for col, entite in pions.items():
         pion_entite = Pion(pos, entite[g], couleur, mov)
         entities.append(pion_entite)
 
+for entiy in entities:
+            entiy.cases_dispo()
+
 # Boucle principale du jeu
 while game.running:
     for event in pg.event.get():
@@ -354,20 +357,8 @@ while game.running:
                                 for enties in entities:
                                     if len(enties.cases_available) == 0:
                                         enties.cases_dispo()
-                    ent.cases_available = []
-                    abc = False
-                    for j in range(len(ent.movements)):
-                        if len(ent.movements[j]) == 2:
-                            g_x, h_y = ent.movements[j][0], ent.movements[j][1]
-                            n_x, n_y = ent.x + (g_x * 73), ent.y + (h_y * 73)
-                            for k, v in cases.items():
-                                if str(n_x) + "-" + str(n_y) == v:
-                                    if is_case_disponible(ent, k, entities, ent.color):
-                                        if ent.fr == "roi" or ent.fr == "conseiller":
-                                            if k in palais[ent.color]:
-                                                ent.cases_available.append(k)
-                                        else:
-                                            ent.cases_available.append(k)
+                        abc = False
+                        ent.cases_dispo()
                         ent.suivre_souris = False
 
     screen.fill((255, 206, 162))
