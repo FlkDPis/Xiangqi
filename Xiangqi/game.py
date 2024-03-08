@@ -3,10 +3,12 @@ from pygame.locals import *
 from variables import *
 from math import *
 from functions import is_case_disponible, distance
+import os
 
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 900))
 pg.display.set_caption("Xiangqi")
+ic = 0
 
 
 # Class Case qui permet de savoir où sont les cases
@@ -45,151 +47,31 @@ class Pion:
             self.movements = [(0, -1)]
         self.suivre_souris = False
         self.cases_available = []
+        self.cases_dispo()
 
-    def cases_dispo(self):  
+    def cases_dispo(self):
         self.cases_available = []
         for j in range(len(self.movements)):
             if len(self.movements[j]) >= 2:
                 a, b = self.movements[j][0], self.movements[j][1]
                 n_x, n_y = self.x + (a * 73), self.y + (b * 73)
-                for k, v in cases.items():
-                    if is_case_disponible(self, k, entities, self.color):
-                        if str(n_x) + "-" + str(n_y) == v:
-                            if self.fr == "roi" or self.fr == "conseiller":
-                                if k in palais[self.color]:
-                                    self.cases_available.append(k)
-                            elif self.fr == "elephant":
-                                if k not in zones[self.color]:
-                                    self.cases_available.append(k)
-                            else:
+            for k, v in cases.items():
+                if is_case_disponible(self, k, entities, self.color):
+                    if str(n_x) + "-" + str(n_y) == v:
+                        if self.fr == "roi" or self.fr == "conseiller":
+                            if k in palais[self.color]:
                                 self.cases_available.append(k)
-
-        if self.fr == "chariot":
-            self.update_cases_avaiblable(
-                self.update_board_after_v(self.display_board_with_pawns_and_moves())
-            )
-
-    def display_board_with_pawns_and_moves(self):
-        board_representation = [
-            ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],
-            ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"],
-            ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
-            ["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9"],
-            ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"],
-            ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"],
-            ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
-            ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8", "H9"],
-            ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"],
-            ["J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9"],
-        ]
-
-        for i in range(len(board_representation)):
-            for j in range(len(board_representation[i])):
-                current_case = board_representation[i][j]
-                for oent in entities:
-                    if current_case == oent.case:
-                        if self.color != oent.color:
-                            board_representation[i][
-                                j
-                            ] = "R"  # Rouge pour la couleur adverse
-                        elif current_case == self.case:
-                            board_representation[i][j] = "V"  # Vert pour votre pion
+                        # elif self.fr == "elephant":
+                        #     if k in zones[self.color]:
+                        #         self.cases_available.append(k)
                         else:
-                            board_representation[i][
-                                j
-                            ] = "B"  # Bleu pour vos autres pions
-                if current_case in self.cases_available:
-                    board_representation[i][j] = "O"  # Disponible
+                            self.cases_available.append(k)
+        if ic > 0:
+            if self.fr == "cheval":
+                self.cheval_check()
 
-        # Afficher le tableau
-        # for row in board_representation:
-        #     print(row)
-        # print('--------------------------------------------------------')
-
-        return board_representation
-
-    def update_board_after_v(self, board):
-        updated_board = [row.copy() for row in board]
-
-        # Trouver la position du pion "V"
-        v_position = None
-        for i in range(len(board)):
-            for j in range(len(board[i])):
-                if board[i][j] == "V":
-                    v_position = (i, j)
-                    break
-
-        if v_position:
-            lst_update = []
-            v_row, v_col = v_position
-
-            # Haut depuis V
-            RB_h = True
-            for i in range(0, 9):
-                if board[i][v_col]:
-                    if board[i][v_col] == "B" or board[i][v_col] == "R":
-                        RB_h = False
-                    if RB_h:
-                        lst_update.append((i, v_col))
-
-            # Bas depuis V
-            RB_b = False
-            for i in range(0, 9):
-                if board[-i][v_col]:
-                    if board[-i][v_col] == "B" or board[-i][v_col] == "R":
-                        RB_b = True
-                    if RB_b:
-                        lst_update.append((i, v_col))
-
-            # Gauche depuis V
-            RB_g = True
-            for i in range(0, -10):
-                if board[v_row][i]:
-                    if board[v_row][i] == "B" or board[v_row][i] == "R":
-                        RB_g = False
-                    if RB_g:
-                        lst_update.append((v_row, i))
-
-            # Droite depuis V
-            RB_d = True
-            for i in range(0, 9):
-                if board[v_row][i]:
-                    if board[v_row][i] == "B" or board[v_row][i] == "R":
-                        RB_d = False
-                    if RB_d:
-                        lst_update.append((v_row, i))
-
-            for pos in lst_update:
-                col, row = pos
-                updated_board[col][row] = "HH"
-
-            # def update_direction(row_step, col_step):
-            #     for i in range(1, 9):
-            #         new_row, new_col = v_row + row_step * i, v_col + col_step * i
-            #         if 0 <= new_row < len(updated_board) and 0 <= new_col < len(
-            #             updated_board[v_row]
-            #         ):
-            #             if (
-            #                 updated_board[new_row][new_col] == "B"
-            #                 or updated_board[new_row][new_col] == "R"
-            #             ):
-            #                 for j in range(1, i):
-            #                     updated_board[v_row + row_step * j][
-            #                         v_col + col_step * j
-            #                     ] = "H"
-            #                 break
-            #             elif updated_board[new_row][new_col] == "O":
-            #                 updated_board[new_row][new_col] = "HH"
-            #         else:
-            #             break
-
-            # # for i in range(-9, 9):
-            # #     for j in range(-10, 10):
-            # #         update_direction(i, j)
-
-        return updated_board
-
-    def update_cases_avaiblable(self, board1):
+    def cheval_check(self):
+        pos = self.case
         board = [
             ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],
             ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"],
@@ -202,23 +84,39 @@ class Pion:
             ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"],
             ["J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9"],
         ]
-        case_update = []
-        for i in range(len(board1)):
-            for j in range(len(board1[i])):
-                if board1[i][j] == "HH":
-                    case_update.append(board[i][j])
 
-        print("Case à update :", case_update)
-        print("Case disponibles : ", self.cases_available)
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if board[i][j] == pos:
+                    index = (i,j)
+            
+        board[index[0]][index[1]] = "@"
 
-        new_cases_available = []
-        for case in self.cases_available:
-            if case not in case_update:
-                new_cases_available.append(case)
+        cases_f = []
+        if 0 <= index[0]-1 < len(board) and 0 <= index[1] < len(board[index[0]-1]): cases_f.append(board[index[0]-1][index[1]])
+        if 0 <= index[0]+1 < len(board) and 0 <= index[1] < len(board[index[0]+1]): cases_f.append(board[index[0]+1][index[1]])
+        if 0 <= index[0] < len(board) and 0 <= index[1]-1 < len(board[index[0]]): cases_f.append(board[index[0]][index[1]-1])
+        if 0 <= index[0] < len(board) and 0 <= index[1]+1 < len(board[index[0]]): cases_f.append(board[index[0]][index[1]+1])
 
-        print("Nouvelles cases disponibles : ", new_cases_available)
+        cases_update = []
+        cases_to_update = []
 
-        self.cases_available = new_cases_available
+        for ents in entities:
+            if ents.case in cases_f:
+                cases_update.append(ents.case)
+
+        for ii in range(len(board)):
+            for jj in range(len(board[ii])) :
+                if board[ii][jj] in cases_update:
+                    board[ii][jj] = 'CU'
+                elif board[ii][jj] in cases_f:
+                    board[ii][jj] = 'CF'
+        
+        os.system('cls')
+        for row in board:
+            print(row)
+        print(cases_update)
+
 
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
@@ -390,7 +288,7 @@ game = Game(board, [Arthur, Raphael], pions, cases)
 
 # Utilisation des class
 game.run()
-i, start = 1 , True
+i = 1
 
 # Création de tout les piosn du jeu
 entities = []
@@ -405,13 +303,14 @@ for col, entite in pions.items():
         pion_entite = Pion(pos, entite[g], couleur, mov)
         entities.append(pion_entite)
 
+for entiy in entities:
+    entiy.cases_dispo()
+    
+ic += 1
+
 # Boucle principale du jeu
 while game.running:
     for event in pg.event.get():
-        if start:
-            for ent in entities:
-                ent.cases_dispo()
-            start = False
         if event.type == pg.QUIT:
             game.running = False
         elif event.type == pg.MOUSEBUTTONDOWN:
@@ -469,7 +368,7 @@ while game.running:
                             x = int(x)
                             y = int(y)
 
-                            # Vérifier si la case cible n'est pas occupée par un autre pion de la même couleur
+                            # Vérifier si la case cible n'est pas occupée par un autre pion
                             case_occupee = False
                             for autre_ent in entities:
                                 if autre_ent.case == v:
@@ -511,19 +410,12 @@ while game.running:
                                     ent.x = xc
                                     ent.y = yc
                                 for enties in entities:
-                                    enties.cases_dispo()
+                                    if len(enties.cases_available) == 0:
+                                        enties.cases_dispo()
+                        abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
-                    print(str(ent.fr) + ':' + str(ent.case))
-                    step1 = ent.display_board_with_pawns_and_moves()
-                    for rcol in step1:
-                        print(rcol)
-                    abc = ent.update_board_after_v(step1)
-                    for row in abc:
-                        print(row)
-                    ent.update_cases_avaiblable(
-                        ent.update_board_after_v(ent.display_board_with_pawns_and_moves())
-                    )
+
     screen.fill((255, 206, 162))
     board.draw_board()
 
