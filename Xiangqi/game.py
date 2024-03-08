@@ -92,24 +92,24 @@ class Pion:
             
         board[index[0]][index[1]] = "@"
 
-        cases_f = []
-        if 0 <= index[0]-1 < len(board) and 0 <= index[1] < len(board[index[0]-1]): cases_f.append(board[index[0]-1][index[1]])
-        if 0 <= index[0]+1 < len(board) and 0 <= index[1] < len(board[index[0]+1]): cases_f.append(board[index[0]+1][index[1]])
-        if 0 <= index[0] < len(board) and 0 <= index[1]-1 < len(board[index[0]]): cases_f.append(board[index[0]][index[1]-1])
-        if 0 <= index[0] < len(board) and 0 <= index[1]+1 < len(board[index[0]]): cases_f.append(board[index[0]][index[1]+1])
-
-        cases_update = []
+        cases_f = {}
+        if 0 <= index[0]-1 < len(board) and 0 <= index[1] < len(board[index[0]-1]): cases_f[index[0]-1, index[1]] = board[index[0]-1][index[1]]
+        if 0 <= index[0]+1 < len(board) and 0 <= index[1] < len(board[index[0]+1]): cases_f[index[0]+1, index[1]] = board[index[0]+1][index[1]]
+        if 0 <= index[0] < len(board) and 0 <= index[1]-1 < len(board[index[0]]): cases_f[index[0], index[1]-1] = board[index[0]][index[1]-1]
+        if 0 <= index[0] < len(board) and 0 <= index[1]+1 < len(board[index[0]]): cases_f[index[0], index[1]+1] = board[index[0]][index[1]+1]
+        cases_update = {}
         cases_to_update = []
 
         for ents in entities:
-            if ents.case in cases_f:
-                cases_update.append(ents.case)
+            for k,v in cases_f.items():
+                if ents.case in v:
+                    cases_update[k] = ents.case
 
         for ii in range(len(board)):
             for jj in range(len(board[ii])) :
-                if board[ii][jj] in cases_update:
+                if board[ii][jj] in cases_update.values():
                     board[ii][jj] = 'CU'
-                elif board[ii][jj] in cases_f:
+                elif board[ii][jj] in cases_f.values():
                     board[ii][jj] = 'CF'
         
         os.system('cls')
