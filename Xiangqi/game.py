@@ -66,9 +66,12 @@ class Pion:
                         #         self.cases_available.append(k)
                         else:
                             self.cases_available.append(k)
-        if ic > 0:
-            if self.fr == "cheval":
-                self.cheval_check()
+        if self.fr == "cheval":
+            res = self.cheval_check()
+            if len(res) > 0:
+                for ab in self.cases_available:
+                    if ab in res:
+                        self.cases_available.remove(ab)
 
     def cheval_check(self):
         pos = self.case
@@ -88,35 +91,84 @@ class Pion:
         for i in range(len(board)):
             for j in range(len(board[i])):
                 if board[i][j] == pos:
-                    index = (i,j)
-            
+                    index = (i, j)
+
         board[index[0]][index[1]] = "@"
 
         cases_f = {}
-        if 0 <= index[0]-1 < len(board) and 0 <= index[1] < len(board[index[0]-1]): cases_f[index[0]-1, index[1]] = board[index[0]-1][index[1]]
-        if 0 <= index[0]+1 < len(board) and 0 <= index[1] < len(board[index[0]+1]): cases_f[index[0]+1, index[1]] = board[index[0]+1][index[1]]
-        if 0 <= index[0] < len(board) and 0 <= index[1]-1 < len(board[index[0]]): cases_f[index[0], index[1]-1] = board[index[0]][index[1]-1]
-        if 0 <= index[0] < len(board) and 0 <= index[1]+1 < len(board[index[0]]): cases_f[index[0], index[1]+1] = board[index[0]][index[1]+1]
+        if 0 <= index[0] - 1 < len(board) and 0 <= index[1] < len(board[index[0] - 1]):
+            cases_f[index[0] - 1, index[1]] = board[index[0] - 1][index[1]]
+        if 0 <= index[0] + 1 < len(board) and 0 <= index[1] < len(board[index[0] + 1]):
+            cases_f[index[0] + 1, index[1]] = board[index[0] + 1][index[1]]
+        if 0 <= index[0] < len(board) and 0 <= index[1] - 1 < len(board[index[0]]):
+            cases_f[index[0], index[1] - 1] = board[index[0]][index[1] - 1]
+        if 0 <= index[0] < len(board) and 0 <= index[1] + 1 < len(board[index[0]]):
+            cases_f[index[0], index[1] + 1] = board[index[0]][index[1] + 1]
         cases_update = {}
-        cases_to_update = []
 
         for ents in entities:
-            for k,v in cases_f.items():
+            for k, v in cases_f.items():
                 if ents.case in v:
                     cases_update[k] = ents.case
 
         for ii in range(len(board)):
-            for jj in range(len(board[ii])) :
+            for jj in range(len(board[ii])):
                 if board[ii][jj] in cases_update.values():
-                    board[ii][jj] = 'CU'
+                    board[ii][jj] = "CU"
                 elif board[ii][jj] in cases_f.values():
-                    board[ii][jj] = 'CF'
-        
-        os.system('cls')
-        for row in board:
-            print(row)
-        print(cases_update)
+                    board[ii][jj] = "CF"
 
+        cases_to_update = []
+        n_index_1 = None  # initialisation en dehors des conditions
+        n_index_2 = None  # initialisation en dehors des conditions
+
+        for a, b in cases_update.items():
+            if a[0] > index[0]:
+                if 0 <= index[0] + 2 < 10 and 0 <= index[1] - 1 < 9:
+                    n_index_1 = (index[0] + 2, index[1] - 1)
+                if 0 <= index[0] + 2 < 10 and 0 <= index[1] + 1 < 9:
+                    n_index_2 = (index[0] + 2, index[1] + 1)
+            elif a[0] < index[0]:  # changed from "if" to "elif"
+                if 0 <= index[0] - 2 < 10 and 0 <= index[1] - 1 < 9:
+                    n_index_1 = (index[0] - 2, index[1] - 1)  # corrected index[0] - 2
+                if 0 <= index[0] - 2 < 10 and 0 <= index[1] + 1 < 9:
+                    n_index_2 = (index[0] - 2, index[1] + 1)  # corrected index[0] - 2
+            if a[1] > index[1]:
+                if (
+                    0 <= index[0] - 1 < 10 and 0 <= index[1] + 2 < 9
+                ):  # corrected index[0] - 1
+                    n_index_1 = (index[0] - 1, index[1] + 2)
+                if (
+                    0 <= index[0] + 1 < 10 and 0 <= index[1] + 2 < 9
+                ):  # corrected index[0] + 1
+                    n_index_2 = (index[0] + 1, index[1] + 2)
+            elif a[1] < index[1]:  # changed from "if" to "elif"
+                if (
+                    0 <= index[0] - 1 < 10 and 0 <= index[1] - 2 < 9
+                ):  # corrected index[0] - 1
+                    n_index_1 = (index[0] - 1, index[1] - 2)
+                if (
+                    0 <= index[0] + 1 < 10 and 0 <= index[1] - 2 < 9
+                ):  # corrected index[0] + 1
+                    n_index_2 = (index[0] + 1, index[1] - 2)
+            cases_to_update.append(n_index_1)
+            cases_to_update.append(n_index_2)
+
+        cases_to_update = list(set(cases_to_update))
+
+        for e in cases_to_update:
+            if e == None:
+                cases_to_update.remove(e)
+
+        n_cases_to_update = []
+        for key in cases_to_update:
+            n_cases_to_update.append(board[key[0]][key[1]])
+
+        # os.system("cls")
+        # for row in board:
+        #     print(row)
+        # print(cases_update)
+        return n_cases_to_update
 
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
@@ -305,7 +357,7 @@ for col, entite in pions.items():
 
 for entiy in entities:
     entiy.cases_dispo()
-    
+
 ic += 1
 
 # Boucle principale du jeu
@@ -400,8 +452,8 @@ while game.running:
                                         ent.case in zones[ent.color]
                                         and ent.fr == "soldat"
                                     ):
-                                        ent.movements.append((1,0))
-                                        ent.movements.append((-1,0))
+                                        ent.movements.append((1, 0))
+                                        ent.movements.append((-1, 0))
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
