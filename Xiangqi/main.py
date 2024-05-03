@@ -3,7 +3,6 @@ from pygame.locals import *
 from variables import *
 from math import *
 from functions import is_case_disponible, distance
-import collections
 
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 900))
@@ -108,11 +107,6 @@ class Board:
             2,
         )
 
-    def winner(self, name):
-        font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 42)
-        texte_retour = font.render(str(name) + 'a gagné la partie', True, (0, 0, 0))
-        screen.blit(texte_retour, (85, 810))
-
     def draw_line(self, pos1, pos2, lar):
         x1, y1 = pos1
         x2, y2 = pos2
@@ -176,13 +170,6 @@ class Game:
         self.turn = 0
         self.current_player = self.players[self.turn]
         self.running = True
-    
-    def checkmate(self):
-        self.switch_player()
-        board.winner(self.current_player)
-        cmd = input('')
-        if cmd == 'q' or cmd == 'Q':
-            self.running = False
 
     def switch_player(self):
         self.turn = (self.turn + 1) % 2
@@ -373,28 +360,6 @@ while game.running:
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
-
-                # Echec
-                if ent.fr == 'roi':
-                    print('wtf')
-                    for enties in entities:
-                        if enties.color != ent.color:
-                            if ent.case in enties.cases_available:
-                                print('doublekill')
-                                game.switch_player()
-
-                # Echec et mat
-                liste_echec = []
-                if ent.fr == 'roi':
-                    print('wtf')
-                    for enties in entities:
-                        if enties.color != ent.color:
-                            for pose in enties.cases_available:
-                                liste_echec.append(pose)
-                    results = collections.Counter(ent.cases_available) & collections.Counter(liste_echec)
-                    inter_result = list(results.elements())
-                    if ent.cases_available == inter_result:
-                        game.checkmate()
 
     screen.fill((255, 206, 162))
     board.draw_board()
