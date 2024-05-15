@@ -110,7 +110,7 @@ class Board:
 
     def winner(self, name):
         font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 42)
-        texte_retour = font.render(str(name) + 'a gagné la partie', True, (0, 0, 0))
+        texte_retour = font.render(str(name) + "a gagné la partie", True, (0, 0, 0))
         screen.blit(texte_retour, (85, 810))
 
     def draw_line(self, pos1, pos2, lar):
@@ -170,18 +170,19 @@ class Game:
         self.turn = 0
         self.dernier_mouvement = None
         self.current_player = None
+        self.echec = [False, False]
 
     def run(self):
         pg.init()
         self.turn = 0
         self.current_player = self.players[self.turn]
         self.running = True
-    
+
     def checkmate(self):
         self.switch_player()
         board.winner(self.current_player)
-        cmd = input('')
-        if cmd == 'q' or cmd == 'Q':
+        cmd = input("")
+        if cmd == "q" or cmd == "Q":
             self.running = False
 
     def switch_player(self):
@@ -250,7 +251,7 @@ game = Game(board, [Arthur, Raphael], pions, cases)
 game.run()
 i = 1
 
-# Création de tout les piosn du jeu
+# Création de tout les pions du jeu
 entities = []
 for col, entite in pions.items():
     for g in range(len(entite)):
@@ -264,7 +265,7 @@ for col, entite in pions.items():
         entities.append(pion_entite)
 
 for entiy in entities:
-            entiy.cases_dispo()
+    entiy.cases_dispo()
 
 # Boucle principale du jeu
 while game.running:
@@ -301,7 +302,8 @@ while game.running:
             # Gestion du bouton "Valider" pour confirmer le mouvement
             elif 570 < mouse_x < 670 and 780 < mouse_y < 880:
                 if pg.mouse.get_pressed()[0]:
-                    game.validate_move(ent)
+                    if game.echec[game.turn] == False:
+                        game.validate_move(ent)
 
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
@@ -358,8 +360,8 @@ while game.running:
                                         ent.case in zones[ent.color]
                                         and ent.fr == "soldat"
                                     ):
-                                        ent.movements.append((1,0))
-                                        ent.movements.append((-1,0))
+                                        ent.movements.append((1, 0))
+                                        ent.movements.append((-1, 0))
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
@@ -375,26 +377,25 @@ while game.running:
                         ent.suivre_souris = False
 
                 # Echec
-                if ent.fr == 'roi':
-                    print('wtf')
+                if ent.fr == "roi":
                     for enties in entities:
                         if enties.color != ent.color:
                             if ent.case in enties.cases_available:
-                                print('doublekill')
-                                game.switch_player()
+                                game.echec[game.turn] = True
+                                print("doublekill")
 
-                # Echec et mat
-                liste_echec = []
-                if ent.fr == 'roi':
-                    print('wtf')
-                    for enties in entities:
-                        if enties.color != ent.color:
-                            for pose in enties.cases_available:
-                                liste_echec.append(pose)
-                    results = collections.Counter(ent.cases_available) & collections.Counter(liste_echec)
-                    inter_result = list(results.elements())
-                    if ent.cases_available == inter_result:
-                        game.checkmate()
+                # # Echec et mat
+                # liste_echec = []
+                # if ent.fr == 'roi':
+                #     print('wtf')
+                #     for enties in entities:
+                #         if enties.color != ent.color:
+                #             for pose in enties.cases_available:
+                #                 liste_echec.append(pose)
+                #     results = collections.Counter(ent.cases_available) & collections.Counter(liste_echec)
+                #     inter_result = list(results.elements())
+                #     if ent.cases_available == inter_result:
+                #         game.checkmate()
 
     screen.fill((255, 206, 162))
     board.draw_board()
