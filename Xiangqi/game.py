@@ -162,12 +162,13 @@ class Pion:
 
         n_cases_to_update = []
         for key in cases_to_update:
-            n_cases_to_update.append(board[key[0]][key[1]])
+            if board[key[0]][key[1]] not in zones[self.color]:
+                n_cases_to_update.append(board[key[0]][key[1]])
 
-        # os.system("cls")
-        # for row in board:
-        #     print(row)
-        # print(cases_update)
+        os.system("cls")
+        for row in board:
+            print(row)
+        print(cases_to_update)
         return n_cases_to_update
 
     def draw(self):
@@ -448,10 +449,7 @@ while game.running:
                                         if enti.color != ent.color:
                                             if ent.case == enti.case:
                                                 enti.out(entities, enti)
-                                if (
-                                    ent.case in zones[ent.color]
-                                    and ent.fr == "soldat"
-                                ):
+                                if ent.case in zones[ent.color] and ent.fr == "soldat":
                                     ent.movements.append((1, 0))
                                     ent.movements.append((-1, 0))
                                 else:
