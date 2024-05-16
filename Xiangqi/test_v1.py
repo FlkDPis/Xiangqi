@@ -24,7 +24,6 @@ class Player:
         self.name = name
         self.gagne = False
         self.color = col
-        self.tour = 0
 
 
 # Class Pion qui crée les pions du jeu avec leur nom etc
@@ -291,6 +290,7 @@ class Game:
         self.turn = 0
         self.dernier_mouvement = None
         self.current_player = None
+        self.start = False
 
     def run(self):
         pg.init()
@@ -355,9 +355,9 @@ class Game:
 
 # Initialisation de la classe MainMenu pour demander les noms des joueurs
 board = Board()
-Arthur = Player("Arthur", 0)
-Raphael = Player("Raphael", 1)
-game = Game(board, [Arthur, Raphael], pions, cases)
+pp1 = None
+pp2 = None
+game = Game(board, [pp1, pp2], pions, cases)
 
 
 # Utilisation des class
@@ -381,6 +381,81 @@ for entiy in entities:
     entiy.cases_dispo()
 
 ic += 1
+
+def get_player_names():
+    font = pg.font.Font(None, 32)
+    input_box1 = pg.Rect(200, 300, 140, 32)
+    input_box2 = pg.Rect(200, 350, 140, 32)
+    button_box = pg.Rect(200, 400, 140, 32)
+    color_inactive = pg.Color('lightskyblue3')
+    color_active = pg.Color('dodgerblue2')
+    color = color_inactive
+    active1 = False
+    active2 = False
+    text1 = ''
+    text2 = ''
+    done = False
+
+    while not done:
+        for event in pg.event.get():
+            if event.type == QUIT:
+                pg.quit()
+                return None, None
+            if event.type == MOUSEBUTTONDOWN:
+                if input_box1.collidepoint(event.pos):
+                    active1 = not active1
+                else:
+                    active1 = False
+
+                if input_box2.collidepoint(event.pos):
+                    active2 = not active2
+                else:
+                    active2 = False
+
+                if button_box.collidepoint(event.pos):
+                    if len(text1) > 1 and len(text2) > 1:
+                        done = True
+
+                color = color_active if active1 or active2 else color_inactive
+
+            if event.type == KEYDOWN:
+                if active1:
+                    if event.key == K_RETURN:
+                        active1 = False
+                    elif event.key == K_BACKSPACE:
+                        text1 = text1[:-1]
+                    else:
+                        text1 += event.unicode
+                if active2:
+                    if event.key == K_RETURN:
+                        active2 = False
+                    elif event.key == K_BACKSPACE:
+                        text2 = text2[:-1]
+                    else:
+                        text2 += event.unicode
+
+        screen.fill((30, 30, 30))
+        txt_surface1 = font.render(text1, True, color)
+        txt_surface2 = font.render(text2, True, color)
+
+        width1 = max(200, txt_surface1.get_width()+10)
+        width2 = max(200, txt_surface2.get_width()+10)
+        input_box1.w = width1
+        input_box2.w = width2
+
+        screen.blit(txt_surface1, (input_box1.x+5, input_box1.y+5))
+        screen.blit(txt_surface2, (input_box2.x+5, input_box2.y+5))
+        pg.draw.rect(screen, color, input_box1, 2)
+        pg.draw.rect(screen, color, input_box2, 2)
+
+        # Draw button
+        pg.draw.rect(screen, pg.Color('dodgerblue2'), button_box)
+        button_text = font.render("Commencer le jeu", True, (255, 255, 255))
+        screen.blit(button_text, (button_box.x + 5, button_box.y + 5))
+
+        pg.display.flip()
+
+    return text1, text2
 
 # Boucle principale du jeu
 while game.running:
@@ -504,49 +579,57 @@ while game.running:
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
+    if game.start == False:
+        n1, n2 = get_player_names()
+        p1 = Player(n1, 0)
+        p2 = Player(n2, 1)
+        game.players = [p1, p2]
+        game.start = True
+        game.current_player = game.players[0]
+    if game.start == True:
+        screen.fill((255, 206, 162))
+        board.draw_board()
 
-    screen.fill((255, 206, 162))
-    board.draw_board()
+        for ent in entities:
+            if ent.suivre_souris:
+                ii = 1
+                for case_available in ent.cases_available:
+                    x, y = cases[case_available].split("-")
+                    x = int(x)
+                    y = int(y)
+                    x1, y1 = cases[ent.case].split("-")
+                    x1 = int(x1)
+                    y1 = int(y1)
+                    if ii == 1:
+                        pg.draw.circle(screen, (255, 220, 29), (x1, y1), 10)
+                    pg.draw.circle(screen, (35, 105, 255), (x, y), 40)
+                    ii = 0
 
-    for ent in entities:
-        if ent.suivre_souris:
-            ii = 1
-            for case_available in ent.cases_available:
-                x, y = cases[case_available].split("-")
-                x = int(x)
-                y = int(y)
-                x1, y1 = cases[ent.case].split("-")
-                x1 = int(x1)
-                y1 = int(y1)
-                if ii == 1:
-                    pg.draw.circle(screen, (255, 220, 29), (x1, y1), 10)
-                pg.draw.circle(screen, (35, 105, 255), (x, y), 40)
-                ii = 0
+        # Afficher le texte du joueur actuel
+        game.display_current_player()
 
-    # Afficher le texte du joueur actuel
-    game.display_current_player()
+        # Dessiner le bouton "Retour"
+        pg.draw.rect(screen, (35, 105, 255), (75, 780, 100, 100), border_radius=3)
+        font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
+        texte_retour = font.render("Retour", True, (255, 255, 255))
+        screen.blit(texte_retour, (85, 810))
 
-    # Dessiner le bouton "Retour"
-    pg.draw.rect(screen, (35, 105, 255), (75, 780, 100, 100), border_radius=3)
-    font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
-    texte_retour = font.render("Retour", True, (255, 255, 255))
-    screen.blit(texte_retour, (85, 810))
+        # Dessiner le bouton "Valider"
+        pg.draw.rect(screen, (35, 105, 255), (570, 780, 100, 100), border_radius=3)
+        font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
+        texte_valider = font.render("Valider", True, (255, 255, 255))
+        screen.blit(texte_valider, (580, 810))
 
-    # Dessiner le bouton "Valider"
-    pg.draw.rect(screen, (35, 105, 255), (570, 780, 100, 100), border_radius=3)
-    font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 22)
-    texte_valider = font.render("Valider", True, (255, 255, 255))
-    screen.blit(texte_valider, (580, 810))
+        # Dessiner les pions
+        for ent in entities:
+            ent.draw()
 
-    for ent in entities:
-        ent.draw()
+        if i == 1:
+            i += 1
 
-    if i == 1:
-        i += 1
-
-    for ent in entities:
-        if ent.suivre_souris:
-            ent.x, ent.y = pg.mouse.get_pos()
+        for ent in entities:
+            if ent.suivre_souris:
+                ent.x, ent.y = pg.mouse.get_pos()
 
     pg.display.flip()
 
