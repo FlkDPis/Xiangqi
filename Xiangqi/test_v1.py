@@ -60,9 +60,9 @@ class Pion:
                         if self.fr == "roi" or self.fr == "conseiller":
                             if k in palais[self.color]:
                                 self.cases_available.append(k)
-                        # elif self.fr == "elephant":
-                        #     if k in zones[self.color]:
-                        #         self.cases_available.append(k)
+                        elif self.fr == "elephant":
+                            if k not in zones[self.color]:
+                                self.cases_available.append(k)
                         else:
                             self.cases_available.append(k)
 
