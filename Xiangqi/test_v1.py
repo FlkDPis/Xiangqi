@@ -64,36 +64,14 @@ class Pion:
                         #     if k in zones[self.color]:
                         #         self.cases_available.append(k)
                         else:
-                            if self.peut_sauter_autre_pion(k, entities):
-                                continue
-                            else:
-                                self.cases_available.append(k)
+                            self.cases_available.append(k)
+
         if self.fr == "cheval":
             res = self.cheval_check()
             if len(res) > 0:
                 for ab in res:
                     if ab in self.cases_available:
                         self.cases_available.remove(ab)
-
-    def peut_sauter_autre_pion(self, case_cible, autres_pions):
-        # Séparer les composantes alphabétiques et numériques de la chaîne de la case cible
-        cible_x, cible_y = ord(case_cible[0]) - ord("A") + 1, int(case_cible[1:])
-
-        # Parcourir tous les autres pions sur le plateau
-        for autre_pion in autres_pions:
-            if autre_pion != self:
-                # Convertir les coordonnées du pion en entiers
-                pion_x, pion_y = autre_pion.x, autre_pion.y
-
-                # Vérifier si le pion est situé sur la trajectoire du mouvement
-                if (self.x + cible_x) // 2 == pion_x and (
-                    self.y + cible_y
-                ) // 2 == pion_y:
-                    return (
-                        True  # La case cible permet de sauter par-dessus un autre pion
-                    )
-
-        return False  # Aucun pion n'est sauté
 
     def cheval_check(self):
         pos = self.case
@@ -184,12 +162,12 @@ class Pion:
 
         n_cases_to_update = []
         for key in cases_to_update:
-            if board[key[0]][key[1]] not in zones[self.color]:
-                n_cases_to_update.append(board[key[0]][key[1]])
+            n_cases_to_update.append(board[key[0]][key[1]])
 
         for cas in palais[self.color]:
             n_cases_to_update.append(cas)
         return n_cases_to_update
+        
 
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
@@ -383,10 +361,11 @@ for entiy in entities:
 ic += 1
 
 def get_player_names():
-    font = pg.font.Font(None, 32)
-    input_box1 = pg.Rect(200, 300, 140, 32)
-    input_box2 = pg.Rect(200, 350, 140, 32)
-    button_box = pg.Rect(200, 400, 140, 32)
+    font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 24)
+    font2 = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 36)
+    input_box1 = pg.Rect(250, 300, 200, 45)
+    input_box2 = pg.Rect(250, 380, 200, 45)
+    button_box = pg.Rect(180, 750, 370, 70)
     color_inactive = pg.Color('lightskyblue3')
     color_active = pg.Color('dodgerblue2')
     color = color_inactive
@@ -403,12 +382,12 @@ def get_player_names():
                 return None, None
             if event.type == MOUSEBUTTONDOWN:
                 if input_box1.collidepoint(event.pos):
-                    active1 = not active1
+                    active1 = True
                 else:
                     active1 = False
 
                 if input_box2.collidepoint(event.pos):
-                    active2 = not active2
+                    active2 = True
                 else:
                     active2 = False
 
@@ -443,15 +422,15 @@ def get_player_names():
         input_box1.w = width1
         input_box2.w = width2
 
-        screen.blit(txt_surface1, (input_box1.x+5, input_box1.y+5))
-        screen.blit(txt_surface2, (input_box2.x+5, input_box2.y+5))
-        pg.draw.rect(screen, color, input_box1, 2)
-        pg.draw.rect(screen, color, input_box2, 2)
+        screen.blit(txt_surface1, (input_box1.x+9, input_box1.y+3))
+        screen.blit(txt_surface2, (input_box2.x+9, input_box2.y+3))
+        pg.draw.rect(screen, color, input_box1, 2, border_radius=10)
+        pg.draw.rect(screen, color, input_box2, 2, border_radius=10)
 
         # Draw button
-        pg.draw.rect(screen, pg.Color('dodgerblue2'), button_box)
-        button_text = font.render("Commencer le jeu", True, (255, 255, 255))
-        screen.blit(button_text, (button_box.x + 5, button_box.y + 5))
+        pg.draw.rect(screen, pg.Color((45, 149, 33)), button_box, border_radius=4)
+        button_text = font2.render("Commencer le jeu", True, (255, 255, 255))
+        screen.blit(button_text, (button_box.x + 17, button_box.y + 10))
 
         pg.display.flip()
 
@@ -556,7 +535,7 @@ while game.running:
                                     ):
                                         ent.movements.append((1, 0))
                                         ent.movements.append((-1, 0))
-                                    if ent.fr == "soldat" and ent.color == 1:
+                                    if ent.fr == "soldat":
                                         if ent.case not in zones[ent.color]:
                                             if (1, 0) in ent.movements:
                                                 ent.movements.remove((1, 0))
