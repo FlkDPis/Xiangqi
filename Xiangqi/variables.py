@@ -22,9 +22,7 @@ for y in letters:
             zones[0].append(y + str(j))
         else:
             zones[1].append(y + str(j))
-
-print(zones)
-
+            
 # Case d'apparition des pions blancs et noirs
 spawn = {
     "white": {
