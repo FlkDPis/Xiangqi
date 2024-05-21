@@ -73,6 +73,13 @@ class Pion:
                     if ab in self.cases_available:
                         self.cases_available.remove(ab)
 
+        if self.fr == "chariot":
+            res2 = self.sauter_pions()
+            if len(res2) > 0:
+                for dc in res2:
+                    if dc in self.cases_available:
+                        self.cases_available.remove(dc)
+
     def cheval_check(self):
         pos = self.case
         board = [
@@ -167,7 +174,87 @@ class Pion:
         for cas in palais[self.color]:
             n_cases_to_update.append(cas)
         return n_cases_to_update
-        
+
+    def sauter_pions(self):
+        pos = self.case
+        board = [
+            ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],
+            ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"],
+            ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+            ["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9"],
+            ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"],
+            ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"],
+            ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+            ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8", "H9"],
+            ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"],
+            ["J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9"],
+        ]
+
+        index = None
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if board[i][j] == pos:
+                    index = (i, j)
+                    break
+            if index:
+                break
+
+        if index is None:
+            raise ValueError(f"Position {pos} not found on the board")
+
+        board[index[0]][index[1]] = "@"
+        cases_f = []
+
+        bloque = False
+        # Vérification des mouvements possibles
+        for i in range(1, 10):
+            if 0 <= index[0] + i < len(board):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0] + i][index[1]]:
+                            board[index[0] + i][index[1]] = "OC"
+                            bloque = True
+                else:
+                    cases_f.append(board[index[0] + i][index[1]])
+
+        bloque = False
+        for i in range(1, 10):
+            if 0 <= index[0] - i < len(board):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0] - i][index[1]]:
+                            board[index[0] - i][index[1]] = "OC"
+                            bloque = True
+                else:
+                    cases_f.append(board[index[0] - i][index[1]])
+
+        bloque = False
+        for i in range(1, 10):
+            if 0 <= index[1] + i < len(board[0]):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0]][index[1] + i]:
+                            board[index[0]][index[1] + i] = "OC"
+                            bloque = True
+                else:
+                    cases_f.append(board[index[0]][index[1] + i])
+
+        bloque = False
+        for i in range(1, 10):
+            if 0 <= index[1] - i < len(board[0]):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0]][index[1] - i]:
+                            board[index[0]][index[1] - i] = "OC"
+                            bloque = True
+                else:
+                    cases_f.append(board[index[0]][index[1] - i])
+
+        os.system("cls")
+        for row in board:
+            print(row)
+
+        return cases_f
 
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
@@ -360,19 +447,20 @@ for entiy in entities:
 
 ic += 1
 
+
 def get_player_names():
     font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 24)
     font2 = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 36)
     input_box1 = pg.Rect(250, 300, 200, 45)
     input_box2 = pg.Rect(250, 380, 200, 45)
     button_box = pg.Rect(180, 750, 370, 70)
-    color_inactive = pg.Color('lightskyblue3')
-    color_active = pg.Color('dodgerblue2')
+    color_inactive = pg.Color("lightskyblue3")
+    color_active = pg.Color("dodgerblue2")
     color = color_inactive
     active1 = False
     active2 = False
-    text1 = ''
-    text2 = ''
+    text1 = ""
+    text2 = ""
     done = False
 
     while not done:
@@ -417,13 +505,13 @@ def get_player_names():
         txt_surface1 = font.render(text1, True, color)
         txt_surface2 = font.render(text2, True, color)
 
-        width1 = max(200, txt_surface1.get_width()+10)
-        width2 = max(200, txt_surface2.get_width()+10)
+        width1 = max(200, txt_surface1.get_width() + 10)
+        width2 = max(200, txt_surface2.get_width() + 10)
         input_box1.w = width1
         input_box2.w = width2
 
-        screen.blit(txt_surface1, (input_box1.x+9, input_box1.y+3))
-        screen.blit(txt_surface2, (input_box2.x+9, input_box2.y+3))
+        screen.blit(txt_surface1, (input_box1.x + 9, input_box1.y + 3))
+        screen.blit(txt_surface2, (input_box2.x + 9, input_box2.y + 3))
         pg.draw.rect(screen, color, input_box1, 2, border_radius=10)
         pg.draw.rect(screen, color, input_box2, 2, border_radius=10)
 
@@ -435,6 +523,7 @@ def get_player_names():
         pg.display.flip()
 
     return text1, text2
+
 
 # Boucle principale du jeu
 while game.running:
