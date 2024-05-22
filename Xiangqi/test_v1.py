@@ -80,6 +80,13 @@ class Pion:
                     if dc in self.cases_available:
                         self.cases_available.remove(dc)
 
+        if self.fr == "canon":
+            res3 = self.canons_poses()
+            if len(res3) > 0:
+                for ef in res3:
+                    if ef in self.cases_available:
+                        self.cases_available.remove(ef)
+
     def cheval_check(self):
         pos = self.case
         board = [
@@ -250,9 +257,161 @@ class Pion:
                 else:
                     cases_f.append(board[index[0]][index[1] - i])
 
-        os.system("cls")
-        for row in board:
-            print(row)
+        # os.system("cls")
+        # for row in board:
+        #     print(row)
+
+        return cases_f
+
+    def canons_poses(self):
+        pos = self.case
+        board = [
+            ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"],
+            ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9"],
+            ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+            ["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9"],
+            ["E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"],
+            ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"],
+            ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"],
+            ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8", "H9"],
+            ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9"],
+            ["J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9"],
+        ]
+
+        index = None
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if board[i][j] == pos:
+                    index = (i, j)
+                    break
+            if index:
+                break
+
+        if index is None:
+            raise ValueError(f"Position {pos} not found on the board")
+
+        board[index[0]][index[1]] = "@"
+        cases_f = []
+
+        bloque = False
+        manger = False
+        case_p = ""
+        for i in range(1, 10):
+            if 0 <= index[0] + i < len(board):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0] + i][index[1]]:
+                            cases_f.append(board[index[0] + i][index[1]])
+                            board[index[0] + i][index[1]] = "OC"
+                            bloque = True
+                else:
+                    if manger == False:
+                        for enti in entities:
+                            if board[index[0] + i][index[1]] == enti.case:
+                                manger = True
+                                case_p = enti.case
+                                ipos = i
+                                break
+                        if manger == False:
+                            cases_f.append(board[index[0] + i][index[1]])
+                    else:
+                        if board[index[0] + i][index[1]] != case_p:
+                            cases_f.append(board[index[0] + i][index[1]])
+
+        if manger == True:
+            for a in range(1, ipos):
+                cases_f.append(board[index[0] + a][index[1]])
+
+        bloque = False
+        manger = False
+        case_p = ""
+        for i in range(1, 10):
+            if 0 <= index[0] - i < len(board):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0] - i][index[1]]:
+                            cases_f.append(board[index[0] - i][index[1]])
+                            board[index[0] - i][index[1]] = "OC"
+                            bloque = True
+                else:
+                    if manger == False:
+                        for enti in entities:
+                            if board[index[0] - i][index[1]] == enti.case:
+                                manger = True
+                                case_p = enti.case
+                                ipos = i
+                                break
+                        if manger == False:
+                            cases_f.append(board[index[0] - i][index[1]])
+                    else:
+                        if board[index[0] - i][index[1]] != case_p:
+                            cases_f.append(board[index[0] - i][index[1]])
+
+        if manger == True:
+            for a in range(1, ipos):
+                cases_f.append(board[index[0] - a][index[1]])
+
+        bloque = False
+        manger = False
+        case_p = ""
+        for i in range(1, 10):
+            if 0 <= index[1] + i < len(board[0]):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0]][index[1] + i]:
+                            cases_f.append(board[index[0]][index[1] + i])
+                            board[index[0]][index[1] + i] = "OC"
+                            bloque = True
+                else:
+                    if manger == False:
+                        for enti in entities:
+                            if board[index[0]][index[1] + i] == enti.case:
+                                manger = True
+                                case_p = enti.case
+                                ipos = i
+                                break
+                        if manger == False:
+                            cases_f.append(board[index[0]][index[1] + i])
+                    else:
+                        if board[index[0]][index[1] + i] != case_p:
+                            cases_f.append(board[index[0]][index[1] + i])
+
+        if manger == True:
+            for a in range(1, ipos):
+                cases_f.append(board[index[0]][index[1] + a])
+
+        bloque = False
+        manger = False
+        case_p = ""
+        for i in range(1, 10):
+            if 0 <= index[1] - i < len(board[0]):
+                if bloque == False:
+                    for pion in entities:
+                        if pion.case == board[index[0]][index[1] - i]:
+                            cases_f.append(board[index[0]][index[1] - i])
+                            board[index[0]][index[1] - i] = "OC"
+                            bloque = True
+                else:
+                    if manger == False:
+                        for enti in entities:
+                            if board[index[0]][index[1] - i] == enti.case:
+                                manger = True
+                                case_p = enti.case
+                                ipos = i
+                                break
+                        if manger == False:
+                            cases_f.append(board[index[0]][index[1] - i])
+                    else:
+                        if board[index[0]][index[1] - i] != case_p:
+                            cases_f.append(board[index[0]][index[1] - i])
+
+        if manger == True:
+            for a in range(1, ipos):
+                cases_f.append(board[index[0]][index[1] - a])
+
+        # os.system("cls")
+        # for row in board:
+        #     print(row)
 
         return cases_f
 
@@ -411,6 +570,7 @@ class Game:
             ent.x = x
             ent.y = y
             ent.case = ancienne_case
+            ent.liste_actions = (ent.case, ent.liste_actions)
             if ent.last_case:
                 ent.last_case.pop()
             self.dernier_mouvement = None
