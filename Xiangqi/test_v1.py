@@ -60,6 +60,7 @@ class Pion:
                         if self.fr == "roi" or self.fr == "conseiller":
                             if k in palais[self.color]:
                                 self.cases_available.append(k)
+
                         elif self.fr == "elephant":
                             if k not in zones[self.color]:
                                 self.cases_available.append(k)
@@ -522,6 +523,13 @@ class Game:
         self.current_player = self.players[self.turn]
         self.running = True
 
+    def checkmate(self):
+        self.switch_player()
+        board.winner(self.current_player)
+        cmd = input("")
+        if cmd == "q" or cmd == "Q":
+            self.running = False
+
     def switch_player(self):
         self.turn = (self.turn + 1) % 2
         self.current_player = self.players[self.turn]
@@ -606,6 +614,7 @@ for entiy in entities:
     entiy.cases_dispo()
 
 ic += 1
+echec = False
 
 
 def get_player_names():
@@ -807,6 +816,7 @@ while game.running:
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
+
     if game.start == False:
         n1, n2 = get_player_names()
         p1 = Player(n1, 0)
@@ -814,6 +824,7 @@ while game.running:
         game.players = [p1, p2]
         game.start = True
         game.current_player = game.players[0]
+
     if game.start == True:
         screen.fill((255, 206, 162))
         board.draw_board()
