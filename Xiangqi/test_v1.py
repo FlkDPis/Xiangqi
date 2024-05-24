@@ -822,13 +822,17 @@ while game.running:
 
                 # Echec et mat
                 liste_echec = []
+                liste_roi = []
                 if ent.fr == "roi":
                     for enties in entities:
                         if enties.color != ent.color:
                             for pose in enties.cases_available:
                                 liste_echec.append(pose)
+                    for pos in ent.cases_available:
+                        liste_roi.append(pos)
+                    liste_roi.append(ent.case)
                     results = collections.Counter(
-                        ent.cases_available
+                        liste_roi
                     ) & collections.Counter(liste_echec)
                     inter_result = list(results.elements())
                     if ent.cases_available == inter_result:
