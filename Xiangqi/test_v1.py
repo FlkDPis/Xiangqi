@@ -320,10 +320,6 @@ class Pion:
                         if board[index[0] + i][index[1]] != case_p:
                             cases_f.append(board[index[0] + i][index[1]])
 
-        if manger == True:
-            for a in range(1, ipos):
-                cases_f.append(board[index[0] + a][index[1]])
-
         bloque = False
         manger = False
         case_p = ""
@@ -349,9 +345,6 @@ class Pion:
                         if board[index[0] - i][index[1]] != case_p:
                             cases_f.append(board[index[0] - i][index[1]])
 
-        if manger == True:
-            for a in range(1, ipos):
-                cases_f.append(board[index[0] - a][index[1]])
 
         bloque = False
         manger = False
@@ -378,10 +371,6 @@ class Pion:
                         if board[index[0]][index[1] + i] != case_p:
                             cases_f.append(board[index[0]][index[1] + i])
 
-        if manger == True:
-            for a in range(1, ipos):
-                cases_f.append(board[index[0]][index[1] + a])
-
         bloque = False
         manger = False
         case_p = ""
@@ -406,10 +395,6 @@ class Pion:
                     else:
                         if board[index[0]][index[1] - i] != case_p:
                             cases_f.append(board[index[0]][index[1] - i])
-
-        if manger == True:
-            for a in range(1, ipos):
-                cases_f.append(board[index[0]][index[1] - a])
 
         # os.system("cls")
         # for row in board:
@@ -441,6 +426,7 @@ class Pion:
 
     def out(self, entites, pion):
         self.outed = True
+        entities_out.append(pion)
         entites.remove(pion)
 
 
@@ -579,6 +565,9 @@ class Game:
             ent.x = x
             ent.y = y
             ent.case = ancienne_case
+            if ent.liste_actions[0] == 'eat':
+                entite = entities_out.pop(-1)
+                entities.append(entite)
             ent.liste_actions = (ent.case, ent.liste_actions)
             if ent.last_case:
                 ent.last_case.pop()
@@ -610,6 +599,8 @@ for col, entite in pions.items():
         mov = mouvs.get(pion.get(entite[g]))
         pion_entite = Pion(pos, entite[g], couleur, mov)
         entities.append(pion_entite)
+
+entities_out = []
 
 for entiy in entities:
     entiy.cases_dispo()
@@ -783,10 +774,15 @@ while game.running:
                                     ent.liste_actions = (v, ent.liste_actions)
                                     if game.dernier_mouvement is None:
                                         if ent.case != last_case:
-                                            game.dernier_mouvement = (
-                                                ent,
-                                                ent.liste_actions[1][0],
-                                            )
+                                            if ent.liste_actions[1][0] != "eat":
+                                                game.dernier_mouvement = (
+                                                    ent,
+                                                    ent.liste_actions[1][0],
+                                                )
+                                            else:
+                                                game.dernier_mouvement = (
+                                                    ent, ent.liste_actions[1][1][0]
+                                                )
                                     ak = 1
                                     if (
                                         ent.case in zones[ent.color]
@@ -804,6 +800,7 @@ while game.running:
                                         if enti.color != ent.color:
                                             if ent.case == enti.case:
                                                 enti.out(entities, enti)
+                                                ent.liste_actions = ('eat', ent.liste_actions)
                                 else:
                                     casee = cases[ent.case]
                                     xc, yc = casee.split("-")
