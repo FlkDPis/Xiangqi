@@ -4,6 +4,7 @@ from variables import *
 from math import *
 from functions import is_case_disponible, distance
 import os
+import collections
 
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 900))
@@ -816,6 +817,20 @@ while game.running:
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
+
+                # Echec et mat
+                liste_echec = []
+                if ent.fr == "roi":
+                    for enties in entities:
+                        if enties.color != ent.color:
+                            for pose in enties.cases_available:
+                                liste_echec.append(pose)
+                    results = collections.Counter(
+                        ent.cases_available
+                    ) & collections.Counter(liste_echec)
+                    inter_result = list(results.elements())
+                    if ent.cases_available == inter_result:
+                        game.checkmate()
 
     if game.start == False:
         n1, n2 = get_player_names()
