@@ -559,8 +559,10 @@ class Game:
 
     def validate_move(self, ent):
         if self.dernier_mouvement is not None:
-            ent.cases_dispo()
             self.switch_player()
+            ent.cases_dispo()
+            for ents in entities:
+                ents.cases_dispo()
         self.dernier_mouvement = None
 
     def retour_arriere(self):
@@ -820,14 +822,24 @@ while game.running:
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
-
+                
                 # Echec 
+                ehec = False
                 if ent.fr == "roi":
                     for enties in entities:
                         if enties.color != ent.color:
                             if ent.case in enties.cases_available:
-                                game.echec[game.turn] = True 
-                                game.switch_player()   
+                                ehec = True
+                                game.switch_player()
+                                print('echec')
+                                break
+                
+                if ehec == True:
+                    game.echec[game.turn] = True
+                else:
+                    if game.echec[game.turn] == True:
+                        game.dernier_mouvement = None
+                    game.echec[game.turn] = False
 
                 # Echec et mat
                 liste_echec = []
