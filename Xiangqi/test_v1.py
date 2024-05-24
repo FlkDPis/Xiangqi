@@ -516,6 +516,11 @@ class Game:
         cmd = input("")
         if cmd == "q" or cmd == "Q":
             self.running = False
+    
+    def winner(self, name):
+        font = pg.font.Font("Xiangqi\\fonts\\Poppins.ttf", 42)
+        texte_retour = font.render(str(name) + "a gagné la partie", True, (0, 0, 0))
+        screen.blit(texte_retour, (85, 810))
 
     def switch_player(self):
         self.turn = (self.turn + 1) % 2
