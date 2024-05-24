@@ -503,6 +503,7 @@ class Game:
         self.dernier_mouvement = None
         self.current_player = None
         self.start = False
+        self.echec = [False, False]
 
     def run(self):
         pg.init()
@@ -735,7 +736,8 @@ while game.running:
             # Gestion du bouton "Valider" pour confirmer le mouvement
             elif 570 < mouse_x < 670 and 780 < mouse_y < 880:
                 if pg.mouse.get_pressed()[0]:
-                    game.validate_move(ent)
+                    if game.echec[game.turn] == False:
+                        game.validate_move(ent)
 
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
@@ -814,11 +816,18 @@ while game.running:
                                     ent.x = xc
                                     ent.y = yc
                                 for enties in entities:
-                                    if len(enties.cases_available) == 0:
-                                        enties.cases_dispo()
+                                    enties.cases_dispo()
                         abc = False
                         ent.cases_dispo()
                         ent.suivre_souris = False
+
+                # Echec 
+                if ent.fr == "roi":
+                    for enties in entities:
+                        if enties.color != ent.color:
+                            if ent.case in enties.cases_available:
+                                game.echec[game.turn] = True 
+                                game.switch_player()   
 
                 # Echec et mat
                 liste_echec = []
