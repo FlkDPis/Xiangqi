@@ -45,6 +45,7 @@ spawn = {
     },
 }
 
+<<<<<<< HEAD
 for col, it in pions.items():
     for piece, positions in spawn[col].items():
         for i in range(len(positions)):
@@ -57,6 +58,15 @@ mouvs = {
     # sauf excpetion
     # ROI
     # Ne peut pas sortir du palais
+=======
+# Mouvements autorisés pour chaque pion
+mouvs = {
+# Aucune pièce ne peut sauter au dessus d'une autre
+# sauf canon pour tuer
+
+    #ROI
+# Ne peut pas sortir du palais
+>>>>>>> main
     "帥": [
         (1, 0),
         (0, 1),
