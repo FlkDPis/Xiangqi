@@ -403,12 +403,6 @@ class Pion:
 
         return cases_f
 
-                        # elif self.fr == "elephant":
-                        #     if k in zones[self.color]:
-                        #         self.cases_available.append(k)
-                        else:
-                            self.cases_available.append(k)
-
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
         c = 1 if self.color == 0 else 0
