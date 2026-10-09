@@ -4,7 +4,6 @@ from variables import *
 from math import *
 from functions import is_case_disponible, distance
 import os
->>>>>>> main
 import collections
 
 # Initialisation de certaines variables pour le jeu
