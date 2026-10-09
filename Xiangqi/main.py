@@ -988,64 +988,62 @@ while game.running:
         for ent in entities:
             if ent.suivre_souris:
                 ent.x, ent.y = pg.mouse.get_pos()
+                sorted_b = dict(sorted(b.items()))
+                ak = 0
+                for k, v in sorted_b.items():
+                    if ak == 0:
+                        c = cases.get(v)
+                        x, y = c.split("-")
+                        x = int(x)
+                        y = int(y)
 
+                        # Vérifier si la case cible n'est pas occupée par un autre pion
+                        case_occupee = False
+                        for autre_ent in entities:
+                            if autre_ent.case == v:
+                                if autre_ent != ent:
+                                    if autre_ent.color == ent.color:
+                                        case_occupee = True
+                                        break
 
-                    sorted_b = dict(sorted(b.items()))
-                    ak = 0
-                    for k, v in sorted_b.items():
-                        if ak == 0:
-                            c = cases.get(v)
-                            x, y = c.split("-")
-                            x = int(x)
-                            y = int(y)
-
-                            # Vérifier si la case cible n'est pas occupée par un autre pion
-                            case_occupee = False
-                            for autre_ent in entities:
-                                if autre_ent.case == v:
-                                    if autre_ent != ent:
-                                        if autre_ent.color == ent.color:
-                                            case_occupee = True
-                                            break
-
-                            if not case_occupee:
-                                if not game.dernier_mouvement:
-                                    # Déplacer le pion uniquement si la case n'est pas occupée
-                                    ent.x = x
-                                    ent.y = y
-                                    last_case = ent.case
-                                    ent.case = v
-                                    ent.liste_actions = (v, ent.liste_actions)
-                                    if game.dernier_mouvement is None:
-                                        if ent.case != last_case:
-                                            game.dernier_mouvement = (
-                                                ent,
-                                                ent.liste_actions[1][0],
-                                            )
-                                    ak = 1
-                                    for enti in entities:
-                                        if enti.color != ent.color:
-                                            if ent.case == enti.case:
-                                                enti.out(entities, enti)
-                                    if (
-                                        ent.case in zones[ent.color]
-                                        and ent.fr == "soldat"
-                                    ):
-                                        ent.movements.append((1,0))
-                                        ent.movements.append((-1,0))
-                                else:
-                                    casee = cases[ent.case]
-                                    xc, yc = casee.split("-")
-                                    xc = int(xc)
-                                    yc = int(yc)
-                                    ent.x = xc
-                                    ent.y = yc
-                                for enties in entities:
-                                    if len(enties.cases_available) == 0:
-                                        enties.cases_dispo()
-                        abc = False
-                        ent.cases_dispo()
-                        ent.suivre_souris = False
+                        if not case_occupee:
+                            if not game.dernier_mouvement:
+                                # Déplacer le pion uniquement si la case n'est pas occupée
+                                ent.x = x
+                                ent.y = y
+                                last_case = ent.case
+                                ent.case = v
+                                ent.liste_actions = (v, ent.liste_actions)
+                                if game.dernier_mouvement is None:
+                                    if ent.case != last_case:
+                                        game.dernier_mouvement = (
+                                            ent,
+                                            ent.liste_actions[1][0],
+                                        )
+                                ak = 1
+                                for enti in entities:
+                                    if enti.color != ent.color:
+                                        if ent.case == enti.case:
+                                            enti.out(entities, enti)
+                                if (
+                                    ent.case in zones[ent.color]
+                                    and ent.fr == "soldat"
+                                ):
+                                    ent.movements.append((1,0))
+                                    ent.movements.append((-1,0))
+                            else:
+                                casee = cases[ent.case]
+                                xc, yc = casee.split("-")
+                                xc = int(xc)
+                                yc = int(yc)
+                                ent.x = xc
+                                ent.y = yc
+                            for enties in entities:
+                                if len(enties.cases_available) == 0:
+                                    enties.cases_dispo()
+                    abc = False
+                    ent.cases_dispo()
+                    ent.suivre_souris = False
 
                 # Échec
                 if ent.fr == 'roi':
