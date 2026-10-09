@@ -53,12 +53,6 @@ for col, it in pions.items():
 
 # Mouvements autorisé pour chaque pion
 mouvs = {
-    # Aucune pièce ne peut sauter au dessus d'une autre
-    # sauf excpetion
-    # ROI
-    # Ne peut pas sortir du palais
-# Mouvements autorisés pour chaque pion
-mouvs = {
 # Aucune pièce ne peut sauter au dessus d'une autre
 # sauf canon pour tuer
 
