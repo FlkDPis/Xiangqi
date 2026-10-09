@@ -12,10 +12,7 @@ import collections
 # Initialisation de certaines variables pour le jeu
 screen = pg.display.set_mode((730, 900))
 pg.display.set_caption("Xiangqi")
-<<<<<<< HEAD
 ic = 0
-=======
->>>>>>> main
 
 
 # Class Case qui permet de savoir où sont les cases
@@ -31,10 +28,8 @@ class Player:
         self.name = name
         self.gagne = False
         self.color = col
-<<<<<<< HEAD
-=======
         self.tour = 0
->>>>>>> main
+
 
 
 # Class Pion qui crée les pions du jeu avec leur nom etc
@@ -71,7 +66,6 @@ class Pion:
                         if self.fr == "roi" or self.fr == "conseiller":
                             if k in palais[self.color]:
                                 self.cases_available.append(k)
-<<<<<<< HEAD
                         if self.fr == "elephant":
                             if k not in zones[self.color]:
                                 self.cases_available.append(k)
@@ -412,14 +406,12 @@ class Pion:
 
         return cases_f
 
-=======
                         # elif self.fr == "elephant":
                         #     if k in zones[self.color]:
                         #         self.cases_available.append(k)
                         else:
                             self.cases_available.append(k)
 
->>>>>>> main
     def draw(self):
         chemin = "Xiangqi\\fonts\\SIMSUN.ttf"
         c = 1 if self.color == 0 else 0
@@ -444,10 +436,7 @@ class Pion:
 
     def out(self, entites, pion):
         self.outed = True
-<<<<<<< HEAD
         entities_out.append(pion)
-=======
->>>>>>> main
         entites.remove(pion)
 
 
@@ -528,10 +517,7 @@ class Game:
         self.turn = 0
         self.dernier_mouvement = None
         self.current_player = None
-<<<<<<< HEAD
         self.start = False
-=======
->>>>>>> main
         self.echec = [False, False]
 
     def run(self):
@@ -613,7 +599,6 @@ class Game:
         texte_retour = font.render(str(name) + "a gagné la partie", True, (0, 0, 0))
         screen.blit(texte_retour, (85, 810))
 
-<<<<<<< HEAD
     def switch_player(self):
         self.turn = (self.turn + 1) % 2
         self.current_player = self.players[self.turn]
@@ -680,13 +665,11 @@ board = Board()
 pp1 = None
 pp2 = None
 game = Game(board, [pp1, pp2], pions, cases)
-=======
 # Initialisation de la classe MainMenu pour demander les noms des joueurs
 board = Board()
 Arthur = Player("Arthur", 0)
 Raphael = Player("Raphael", 1)
 game = Game(board, [Arthur, Raphael], pions, cases)
->>>>>>> main
 
 
 # Utilisation des class
@@ -706,7 +689,6 @@ for col, entite in pions.items():
         pion_entite = Pion(pos, entite[g], couleur, mov)
         entities.append(pion_entite)
 
-<<<<<<< HEAD
 entities_out = []
 
 for entiy in entities:
@@ -792,10 +774,8 @@ def get_player_names():
 
     return text1, text2
 
-=======
 for entiy in entities:
             entiy.cases_dispo()
->>>>>>> main
 
 # Boucle principale du jeu
 while game.running:
@@ -823,7 +803,6 @@ while game.running:
                             # Sauvegarder le dernier mouvement avant de suivre la souris
                             ent.last_case.append(ent.case)
                             game.selected_pion = ent
-<<<<<<< HEAD
                 if ent.case in zones[ent.color] and ent.fr == "soldat":
                     ent.movements.append((1, 0))
                     ent.movements.append((-1, 0))
@@ -833,8 +812,6 @@ while game.running:
                             ent.movements.remove((1, 0))
                         if (-1, 0) in ent.movements:
                             ent.movements.remove((-1, 0))
-=======
->>>>>>> main
 
             # Gestion du bouton "Retour" lorsqu'un pion a bougé
             if 75 < mouse_x < 175 and 780 < mouse_y < 880:
@@ -846,11 +823,9 @@ while game.running:
                 if pg.mouse.get_pressed()[0]:
                     if game.echec[game.turn] == False:
                         game.validate_move(ent)
-<<<<<<< HEAD
-=======
                     else:
                         break
->>>>>>> main
+
 
         elif event.type == pg.MOUSEBUTTONUP:
             for ent in entities:
@@ -865,7 +840,6 @@ while game.running:
                         yy = int(yy)
                         d = distance(event_x, event_y, xx, yy)
                         b[d] = ent.cases_available[j]
-<<<<<<< HEAD
 
                     sorted_b = dict(sorted(b.items()))
                     ak = 0
@@ -1024,7 +998,6 @@ while game.running:
             if ent.suivre_souris:
                 ent.x, ent.y = pg.mouse.get_pos()
 
-=======
 
                     sorted_b = dict(sorted(b.items()))
                     ak = 0
@@ -1162,7 +1135,6 @@ while game.running:
         if ent.suivre_souris:
             ent.x, ent.y = pg.mouse.get_pos()
 
->>>>>>> main
     pg.display.flip()
 
 pg.quit()
