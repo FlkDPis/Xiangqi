@@ -3,7 +3,7 @@
 ## Informations
 
 - Titre: `Xiangqi`
-- Auteurs: `Arthur Meilhan`,` Raphaël Pinard LeGry`
+- Auteurs: `Arthur Meilhan`,`Raphaël Pinard LeGry`
 
 ## Installation et Dépendance
 
@@ -36,8 +36,6 @@ pip3 install pygame
 |    |—— main.py
 |    |—— test.py
 |    |—— variables.py
-|    |—— __pycache__
-|        |—— variables.cpython-310.pyc
 ```
 
 ## Détails de code
