@@ -3,9 +3,7 @@ from pygame.locals import *
 from variables import *
 from math import *
 from functions import is_case_disponible, distance
-<<<<<<< HEAD
 import os
-=======
 >>>>>>> main
 import collections
 
