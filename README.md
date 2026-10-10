@@ -38,9 +38,9 @@ pip3 install pygame
 |    |—— functions.py
 |    |—— variables.py
 |    |—— fonts
-|    |    |—— *
+|         |—— *
 |    |—— img
-|    |    |—— *
+|         |—— *
 ```
 
 ## Détails de code
