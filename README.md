@@ -1,4 +1,4 @@
-# Xiangqi
+# Xiangqi (Obsolète)
 
 ## Informations
 
