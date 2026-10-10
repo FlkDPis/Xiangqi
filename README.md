@@ -35,10 +35,12 @@ pip3 install pygame
 ```
 |—— Xiangqi
 |    |—— main.py
-|    |—— test.py
+|    |—— functions.py
 |    |—— variables.py
-|    |—— __pycache__
-|        |—— variables.cpython-310.pyc
+|    |—— fonts
+|    |    *
+|    |—— img
+|    |    *
 ```
 
 ## Détails de code
