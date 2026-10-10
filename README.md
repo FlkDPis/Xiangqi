@@ -4,6 +4,7 @@
 
 - Titre: `Xiangqi`
 - Auteurs: `Arthur Meilhan`,` Raphaël Pinard LeGry`
+- Fonctionnement: Obsolète actuellement (Merge raté)
 
 ## Installation et Dépendance
 
